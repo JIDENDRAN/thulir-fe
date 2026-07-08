@@ -121,7 +121,7 @@ function Checkout() {
           });
 
           const options = {
-            key: "rzp_test_1DP5mmOlF5G5ag", // Test Key ID
+            key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_1DP5mmOlF5G5ag", // Use env variable
             amount: rzpOrder.amount,
             currency: rzpOrder.currency,
             name: "Thulir Healthcare",
