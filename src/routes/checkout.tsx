@@ -15,16 +15,12 @@ export const Route = createFileRoute("/checkout")({
   component: Checkout,
 });
 
-type Method = "upi" | "card" | "cod";
-
-// Demo UPI VPA — replace with clinic's real UPI ID
-const UPI_VPA = "thulirhealthcare@upi";
-const UPI_NAME = "Thulir Healthcare";
+type Method = "online" | "cod";
 
 function Checkout() {
   const { items, total, clear } = useCart();
   const navigate = useNavigate();
-  const [method, setMethod] = useState<Method>("upi");
+  const [method, setMethod] = useState<Method>("online");
   const [placing, setPlacing] = useState(false);
   const [form, setForm] = useState({
     name: "",
@@ -100,22 +96,78 @@ function Checkout() {
 
       const orderId = order.id.slice(0, 8).toUpperCase();
 
-      let paymentStatus = "Cash on Delivery";
-      if (method === "upi") {
-        paymentStatus = `UPI (${UPI_VPA}) — Pending`;
-        const upiUrl = `upi://pay?pa=${encodeURIComponent(UPI_VPA)}&pn=${encodeURIComponent(UPI_NAME)}&am=${grand}&cu=INR&tn=${encodeURIComponent("Order " + orderId)}`;
-        // Attempt UPI intent (works on mobile). Desktop users continue to WhatsApp.
-        window.location.href = upiUrl;
-        await new Promise((r) => setTimeout(r, 600));
-      } else if (method === "card") {
-        paymentStatus = "Card — Pending (contact clinic)";
+      if (method === "cod") {
+        const msg = buildWhatsAppMessage(orderId, "Cash on Delivery");
+        const waUrl = `https://wa.me/91${phoneNumber}?text=${msg}`;
+        clear();
+        window.open(waUrl, "_blank", "noopener");
+        navigate({ to: "/order-success", search: { id: orderId } });
+        return;
       }
 
-      const msg = buildWhatsAppMessage(orderId, paymentStatus);
-      const waUrl = `https://wa.me/91${phoneNumber}?text=${msg}`;
-      clear();
-      window.open(waUrl, "_blank", "noopener");
-      navigate({ to: "/order-success", search: { id: orderId } });
+      // --- RAZORPAY ONLINE PAYMENT ---
+      // Load Razorpay script
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.async = true;
+      document.body.appendChild(script);
+
+      script.onload = async () => {
+        try {
+          const { fetchApi } = await import('@/lib/api');
+          const rzpOrder = await fetchApi('/payments/create-order', {
+            method: 'POST',
+            body: JSON.stringify({ amount: grand })
+          });
+
+          const options = {
+            key: "rzp_test_1DP5mmOlF5G5ag", // Test Key ID
+            amount: rzpOrder.amount,
+            currency: rzpOrder.currency,
+            name: "Thulir Healthcare",
+            description: "Herbal Products Checkout",
+            order_id: rzpOrder.id,
+            handler: async function (response: any) {
+              // Verify Payment
+              const verifyRes = await fetchApi('/payments/verify', {
+                method: 'POST',
+                body: JSON.stringify({
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
+                  orderId: order.id
+                })
+              });
+              if (verifyRes.success) {
+                clear();
+                navigate({ to: "/order-success", search: { id: orderId } });
+              } else {
+                alert("Payment verification failed. Please contact support.");
+              }
+            },
+            prefill: {
+              name: form.name,
+              email: form.email,
+              contact: form.phone
+            },
+            theme: {
+              color: "#307a59" // Leaf color
+            }
+          };
+
+          const rzp = new (window as any).Razorpay(options);
+          rzp.on('payment.failed', function () {
+            alert("Payment failed or cancelled. You can try again.");
+          });
+          rzp.open();
+        } catch (err) {
+          console.error("Failed to start payment", err);
+          alert("Could not load payment gateway.");
+        }
+      };
+      script.onerror = () => {
+        alert("Failed to load Razorpay script.");
+      };
     } catch (error) {
       console.error(error);
       alert("Failed to place order. Please try again.");
@@ -163,8 +215,7 @@ function Checkout() {
           <div className="rounded-2xl border border-border bg-card p-6">
             <h2 className="text-lg font-bold">Payment Method</h2>
             <div className="mt-4 grid gap-3">
-              <PayOption current={method} value="upi" onChange={setMethod} icon={<Smartphone className="h-5 w-5" />} title="UPI (GPay / PhonePe / Paytm)" desc="Pay instantly via any UPI app" />
-              <PayOption current={method} value="card" onChange={setMethod} icon={<CreditCard className="h-5 w-5" />} title="Credit / Debit Card" desc="We'll contact you with a secure payment link" />
+              <PayOption current={method} value="online" onChange={setMethod} icon={<CreditCard className="h-5 w-5" />} title="Pay Online" desc="UPI, Credit/Debit Cards, Netbanking via Razorpay" />
               <PayOption current={method} value="cod" onChange={setMethod} icon={<Truck className="h-5 w-5" />} title="Cash on Delivery" desc="Pay when your order arrives" />
             </div>
             <p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
