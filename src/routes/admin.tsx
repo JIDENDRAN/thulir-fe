@@ -50,7 +50,7 @@ function AdminPortal() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // Tabs
-  const [activeTab, setActiveTab] = useState<"products" | "orders" | "appointments">("products");
+  const [activeTab, setActiveTab] = useState<"products" | "orders" | "appointments" | "patients">("products");
 
   // Orders State
   const [orders, setOrders] = useState<any[]>([]);
@@ -59,6 +59,10 @@ function AdminPortal() {
   // Appointments State
   const [appointments, setAppointments] = useState<any[]>([]);
   const [isLoadingAppointments, setIsLoadingAppointments] = useState(false);
+
+  // Patients State
+  const [patients, setPatients] = useState<any[]>([]);
+  const [isLoadingPatients, setIsLoadingPatients] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -90,6 +94,21 @@ function AdminPortal() {
           }
         };
         loadAppointments();
+      }
+      
+      if (activeTab === "patients" && patients.length === 0) {
+        const loadPatients = async () => {
+          setIsLoadingPatients(true);
+          try {
+            const data = await fetchApi('/patients');
+            setPatients(data);
+          } catch (err) {
+            console.error("Failed to load patients", err);
+          } finally {
+            setIsLoadingPatients(false);
+          }
+        };
+        loadPatients();
       }
     }
   }, [isAuthenticated, activeTab]);
@@ -335,6 +354,18 @@ function AdminPortal() {
           >
             <span className="flex items-center gap-2">
               Appointments
+            </span>
+          </button>
+          <button
+            onClick={() => setActiveTab("patients")}
+            className={`pb-3 px-1 text-sm font-bold border-b-2 transition-colors ${
+              activeTab === "patients"
+                ? "border-leaf text-leaf"
+                : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              Patients
             </span>
           </button>
         </div>
@@ -585,8 +616,10 @@ function AdminPortal() {
         </>
         ) : activeTab === "orders" ? (
           <OrdersView orders={orders} isLoading={isLoadingOrders} />
-        ) : (
+        ) : activeTab === "appointments" ? (
           <AppointmentsView appointments={appointments} isLoading={isLoadingAppointments} />
+        ) : (
+          <PatientsView patients={patients} isLoading={isLoadingPatients} />
         )}
       </div>
     </div>
@@ -759,6 +792,87 @@ function AppointmentsView({ appointments, isLoading }: { appointments: any[]; is
                       className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-3 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-[#20bd5a] transition-transform hover:scale-105"
                     >
                       <MessageCircle className="h-3 w-3" /> Confirm
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function PatientsView({ patients, isLoading }: { patients: any[]; isLoading: boolean }) {
+  if (isLoading) {
+    return <div className="text-center py-20 text-muted-foreground font-medium">Loading patients...</div>;
+  }
+
+  const handleWhatsAppConfirm = (patient: any) => {
+    const msg = [
+      `Hello ${patient.name},`,
+      ``,
+      `Thank you for registering with Thulir Healthcare.`,
+      `We have received your details and will get back to you shortly regarding your health concerns.`,
+      ``,
+      `Stay healthy! 🙏`
+    ].join("\\n");
+    
+    let phone = patient.phone.replace(/\\D/g, '');
+    if (phone.length === 10) phone = '91' + phone;
+    
+    const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+    window.open(waUrl, '_blank', 'noopener');
+  };
+
+  return (
+    <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+      <div className="p-5 border-b border-border bg-muted/40">
+        <h3 className="font-bold text-lg text-foreground">Patients ({patients.length})</h3>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse text-left text-sm text-muted-foreground">
+          <thead className="bg-muted/20 text-xs font-bold uppercase tracking-wider text-muted-foreground border-b border-border">
+            <tr>
+              <th className="px-6 py-4">Reg Date</th>
+              <th className="px-6 py-4">Patient Details</th>
+              <th className="px-6 py-4">Location</th>
+              <th className="px-6 py-4">Health Problem</th>
+              <th className="px-6 py-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {patients.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="px-6 py-10 text-center text-muted-foreground font-medium">
+                  No patient data found.
+                </td>
+              </tr>
+            ) : (
+              patients.map((p) => (
+                <tr key={p.id} className="hover:bg-muted/10 transition-colors">
+                  <td className="px-6 py-4">
+                    <span className="block font-bold text-foreground font-mono">{new Date(p.createdAt).toLocaleDateString()}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="block font-bold text-foreground">{p.name}</span>
+                    <span className="block text-xs mt-0.5">{p.phone} {p.age ? `• ${p.age} yrs` : ''}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="block font-bold text-foreground">{p.place || "-"}</span>
+                    {p.address && <span className="block text-xs line-clamp-1 mt-0.5 max-w-[200px]">{p.address}</span>}
+                  </td>
+                  <td className="px-6 py-4">
+                    {p.problem ? <span className="block font-bold text-foreground line-clamp-2 max-w-[250px]">{p.problem}</span> : "-"}
+                    {p.remarks && <span className="block text-xs line-clamp-1 mt-0.5 max-w-[250px]">{p.remarks}</span>}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <button
+                      onClick={() => handleWhatsAppConfirm(p)}
+                      className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-3 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-[#20bd5a] transition-transform hover:scale-105"
+                    >
+                      <MessageCircle className="h-3 w-3" /> Contact
                     </button>
                   </td>
                 </tr>

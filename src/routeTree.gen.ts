@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SiddhaMedicineRouteImport } from './routes/siddha-medicine'
 import { Route as ProductsRouteImport } from './routes/products'
+import { Route as PatientIntakeRouteImport } from './routes/patient-intake'
 import { Route as OrderSuccessRouteImport } from './routes/order-success'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -35,6 +36,11 @@ const SiddhaMedicineRoute = SiddhaMedicineRouteImport.update({
 const ProductsRoute = ProductsRouteImport.update({
   id: '/products',
   path: '/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PatientIntakeRoute = PatientIntakeRouteImport.update({
+  id: '/patient-intake',
+  path: '/patient-intake',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrderSuccessRoute = OrderSuccessRouteImport.update({
@@ -93,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/order-success': typeof OrderSuccessRoute
+  '/patient-intake': typeof PatientIntakeRoute
   '/products': typeof ProductsRoute
   '/siddha-medicine': typeof SiddhaMedicineRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -107,6 +114,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/order-success': typeof OrderSuccessRoute
+  '/patient-intake': typeof PatientIntakeRoute
   '/products': typeof ProductsRoute
   '/siddha-medicine': typeof SiddhaMedicineRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -122,6 +130,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/order-success': typeof OrderSuccessRoute
+  '/patient-intake': typeof PatientIntakeRoute
   '/products': typeof ProductsRoute
   '/siddha-medicine': typeof SiddhaMedicineRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -138,6 +147,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/order-success'
+    | '/patient-intake'
     | '/products'
     | '/siddha-medicine'
     | '/sitemap.xml'
@@ -152,6 +162,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/order-success'
+    | '/patient-intake'
     | '/products'
     | '/siddha-medicine'
     | '/sitemap.xml'
@@ -166,6 +177,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/order-success'
+    | '/patient-intake'
     | '/products'
     | '/siddha-medicine'
     | '/sitemap.xml'
@@ -181,6 +193,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   GalleryRoute: typeof GalleryRoute
   OrderSuccessRoute: typeof OrderSuccessRoute
+  PatientIntakeRoute: typeof PatientIntakeRoute
   ProductsRoute: typeof ProductsRoute
   SiddhaMedicineRoute: typeof SiddhaMedicineRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -207,6 +220,13 @@ declare module '@tanstack/react-router' {
       path: '/products'
       fullPath: '/products'
       preLoaderRoute: typeof ProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/patient-intake': {
+      id: '/patient-intake'
+      path: '/patient-intake'
+      fullPath: '/patient-intake'
+      preLoaderRoute: typeof PatientIntakeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/order-success': {
@@ -285,6 +305,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   GalleryRoute: GalleryRoute,
   OrderSuccessRoute: OrderSuccessRoute,
+  PatientIntakeRoute: PatientIntakeRoute,
   ProductsRoute: ProductsRoute,
   SiddhaMedicineRoute: SiddhaMedicineRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
