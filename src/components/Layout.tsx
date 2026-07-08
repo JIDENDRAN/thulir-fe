@@ -21,6 +21,7 @@ const nav = [
   { to: "/acupuncture", label: "Acupuncture" },
   { to: "/products", label: "Healthcare Products" },
   { to: "/gallery", label: "Gallery" },
+  { to: "/patient-intake", label: "Patient Intake" },
   { to: "/contact", label: "Contact" },
   { to: "/admin", label: "Admin" },
 ] as const;

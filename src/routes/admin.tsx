@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { Plus, Pencil, Trash2, X, Check, Image as ImageIcon, Leaf, ShieldAlert, Lock, User, LogOut, Package, MessageCircle, Calendar } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Plus, Pencil, Trash2, X, Check, Image as ImageIcon, Leaf, ShieldAlert, Lock, User, LogOut, Package, MessageCircle, Calendar, Settings, Smartphone, RefreshCw } from "lucide-react";
 import { useProducts } from "@/lib/products-context";
-import { inr } from "@/lib/cart";
 import { fetchApi } from "@/lib/api";
-import { useEffect } from "react";
+import { inr } from "@/lib/cart";
+import QRCode from "react-qr-code";
 
 // Import presets for ease of selection
 import capsules from "../assets/product-capsules.jpg";
@@ -50,7 +50,7 @@ function AdminPortal() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // Tabs
-  const [activeTab, setActiveTab] = useState<"products" | "orders" | "appointments" | "patients">("products");
+  const [activeTab, setActiveTab] = useState<"products" | "orders" | "appointments" | "patients" | "settings">("products");
 
   // Orders State
   const [orders, setOrders] = useState<any[]>([]);
@@ -63,6 +63,9 @@ function AdminPortal() {
   // Patients State
   const [patients, setPatients] = useState<any[]>([]);
   const [isLoadingPatients, setIsLoadingPatients] = useState(false);
+
+  // WhatsApp State
+  const [whatsappSettings, setWhatsappSettings] = useState<{connected: boolean, qrCode: string | null}>({ connected: false, qrCode: null });
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -102,16 +105,45 @@ function AdminPortal() {
           try {
             const data = await fetchApi('/patients');
             setPatients(data);
-          } catch (err) {
+          } catch (err: any) {
             console.error("Failed to load patients", err);
+            alert("Error fetching patients: " + err.message);
           } finally {
             setIsLoadingPatients(false);
           }
         };
         loadPatients();
       }
+
+      if (activeTab === "settings") {
+        const loadSettings = async () => {
+          try {
+            const data = await fetchApi('/whatsapp/settings');
+            setWhatsappSettings(data);
+          } catch (err) {
+            console.error(err);
+          }
+        };
+        loadSettings();
+        
+        // Poll for QR code updates every 5 seconds if not connected
+        const interval = setInterval(() => {
+          loadSettings();
+        }, 5000);
+        return () => clearInterval(interval);
+      }
     }
   }, [isAuthenticated, activeTab]);
+
+  const disconnectWhatsapp = async () => {
+    if (!confirm("Are you sure you want to disconnect WhatsApp?")) return;
+    try {
+      await fetchApi('/whatsapp/disconnect', { method: 'POST' });
+      setWhatsappSettings({ connected: false, qrCode: null });
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   // Form State
   const [title, setTitle] = useState("");
@@ -209,7 +241,6 @@ function AdminPortal() {
     return (
       <div className="bg-earth/10 min-h-screen py-20 px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center">
         <div className="mx-auto w-full max-w-md">
-          {/* Brand Logo/Header */}
           <div className="text-center mb-8">
             <div className="mx-auto h-12 w-12 rounded-full bg-leaf/10 flex items-center justify-center text-leaf mb-3">
               <Leaf className="h-6 w-6" />
@@ -218,7 +249,6 @@ function AdminPortal() {
             <p className="text-sm text-muted-foreground mt-2">Admin Portal Login</p>
           </div>
 
-          {/* Login Card */}
           <div className="bg-card border border-border rounded-2xl shadow-xl p-8 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-leaf/40 via-leaf to-leaf/40"></div>
             
@@ -288,86 +318,39 @@ function AdminPortal() {
   return (
     <div className="bg-earth/10 min-h-screen py-10 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-6 mb-8">
           <div>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-leaf/10 px-3 py-1 text-xs font-semibold text-leaf">
               <Leaf className="h-3 w-3" /> Management
             </span>
-            <h1 className="text-3xl font-extrabold text-foreground tracking-tight mt-1">Admin Product Portal</h1>
+            <h1 className="text-3xl font-extrabold text-foreground tracking-tight mt-1">Admin Portal</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Add, update, or remove products displayed in the store catalog.
+              Manage your products, orders, appointments, and system settings.
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            {!isAdding && !editingId && (
-              <button
-                onClick={() => {
-                  resetForm();
-                  setIsAdding(true);
-                }}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-leaf px-5 py-2.5 text-sm font-semibold text-leaf-foreground shadow transition-transform hover:scale-102 hover:bg-leaf/90 cursor-pointer"
-              >
-                <Plus className="h-4 w-4" /> Add Product
-              </button>
-            )}
-            <button
-              onClick={handleLogout}
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-foreground hover:bg-muted transition-transform hover:scale-102 cursor-pointer"
-            >
-              <LogOut className="h-4 w-4" /> Sign Out
-            </button>
-          </div>
+          <button
+            onClick={handleLogout}
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-foreground hover:bg-muted transition-transform hover:scale-102 cursor-pointer"
+          >
+            <LogOut className="h-4 w-4" /> Sign Out
+          </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center gap-4 border-b border-border mb-8">
-          <button
-            onClick={() => setActiveTab("products")}
-            className={`pb-3 px-1 text-sm font-bold border-b-2 transition-colors ${
-              activeTab === "products"
-                ? "border-leaf text-leaf"
-                : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
-            }`}
-          >
-            Products
-          </button>
-          <button
-            onClick={() => setActiveTab("orders")}
-            className={`pb-3 px-1 text-sm font-bold border-b-2 transition-colors ${
-              activeTab === "orders"
-                ? "border-leaf text-leaf"
-                : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
-            }`}
-          >
-            <span className="flex items-center gap-2">
-              Orders
-            </span>
-          </button>
-          <button
-            onClick={() => setActiveTab("appointments")}
-            className={`pb-3 px-1 text-sm font-bold border-b-2 transition-colors ${
-              activeTab === "appointments"
-                ? "border-leaf text-leaf"
-                : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
-            }`}
-          >
-            <span className="flex items-center gap-2">
-              Appointments
-            </span>
-          </button>
-          <button
-            onClick={() => setActiveTab("patients")}
-            className={`pb-3 px-1 text-sm font-bold border-b-2 transition-colors ${
-              activeTab === "patients"
-                ? "border-leaf text-leaf"
-                : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
-            }`}
-          >
-            <span className="flex items-center gap-2">
-              Patients
-            </span>
-          </button>
+        <div className="flex items-center gap-4 border-b border-border mb-8 overflow-x-auto">
+          {["products", "orders", "appointments", "patients", "settings"].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab as any)}
+              className={`pb-3 px-1 text-sm font-bold border-b-2 transition-colors capitalize ${
+                activeTab === tab
+                  ? "border-leaf text-leaf"
+                  : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
         </div>
 
         {/* Tab Content */}
@@ -618,8 +601,10 @@ function AdminPortal() {
           <OrdersView orders={orders} isLoading={isLoadingOrders} />
         ) : activeTab === "appointments" ? (
           <AppointmentsView appointments={appointments} isLoading={isLoadingAppointments} />
-        ) : (
+        ) : activeTab === "patients" ? (
           <PatientsView patients={patients} isLoading={isLoadingPatients} />
+        ) : (
+          <SettingsView whatsappSettings={whatsappSettings} disconnectWhatsapp={disconnectWhatsapp} />
         )}
       </div>
     </div>
@@ -880,6 +865,68 @@ function PatientsView({ patients, isLoading }: { patients: any[]; isLoading: boo
             )}
           </tbody>
         </table>
+      </div>
+    </div>
+  );
+}
+
+function SettingsView({ whatsappSettings, disconnectWhatsapp }: { whatsappSettings: any; disconnectWhatsapp: () => void }) {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold text-foreground">Settings</h2>
+        <p className="text-muted-foreground mt-1">Configure your admin dashboard preferences and integrations.</p>
+      </div>
+      
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm max-w-2xl">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="bg-green-100 p-3 rounded-full text-green-600">
+            <Smartphone className="h-6 w-6" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-foreground">WhatsApp Notifications</h3>
+            <p className="text-sm text-muted-foreground">Receive instant alerts for new bookings and orders</p>
+          </div>
+        </div>
+
+        {whatsappSettings.connected ? (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-5 flex flex-col items-center justify-center text-center">
+            <div className="h-16 w-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+              <Check className="h-8 w-8 text-green-600" />
+            </div>
+            <h4 className="text-lg font-bold text-green-900 mb-1">WhatsApp is Connected!</h4>
+            <p className="text-green-700 text-sm mb-6 max-w-md">Your bot is active and will send notifications to the admin phone number whenever an order is placed or an appointment is booked.</p>
+            <button 
+              onClick={disconnectWhatsapp}
+              className="px-4 py-2 border border-red-200 text-red-600 font-medium rounded-lg hover:bg-red-50 transition-colors"
+            >
+              Disconnect Device
+            </button>
+          </div>
+        ) : (
+          <div className="bg-muted/30 border border-border rounded-lg p-6 flex flex-col items-center text-center">
+            <h4 className="text-lg font-bold text-foreground mb-2">Link Your WhatsApp</h4>
+            <p className="text-muted-foreground text-sm mb-6 max-w-md">
+              Open WhatsApp on your phone, go to <strong>Linked Devices</strong>, and scan this QR code to enable automatic notifications.
+            </p>
+            
+            <div className="bg-white p-4 rounded-xl shadow-sm border border-border mb-4 min-h-[256px] flex items-center justify-center">
+              {whatsappSettings.qrCode ? (
+                <QRCode value={whatsappSettings.qrCode} size={220} />
+              ) : (
+                <div className="flex flex-col items-center gap-3 text-muted-foreground">
+                  <RefreshCw className="h-8 w-8 animate-spin opacity-50" />
+                  <p className="text-sm">Generating QR Code...</p>
+                  <p className="text-xs opacity-70">(Make sure the backend server is running)</p>
+                </div>
+              )}
+            </div>
+            
+            <p className="text-xs text-muted-foreground flex items-center gap-2">
+              <RefreshCw className="h-3 w-3 animate-spin" /> QR code updates automatically
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

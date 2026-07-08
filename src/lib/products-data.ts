@@ -13,6 +13,7 @@ export type Product = {
   mrp?: number;
   desc: string;
   image: string;
+  reviews?: any[];
 };
 
 export const products: Product[] = [
