@@ -1,11 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Phone, Leaf, ArrowRight } from "lucide-react";
+import { Phone, Leaf, ArrowRight, ImageIcon } from "lucide-react";
+import { useState, useEffect } from "react";
+import { API_BASE_URL } from "@/lib/api";
 import g1 from "../assets/gallery-1.jpg";
-import g2 from "../assets/gallery-2.jpg";
-import g3 from "../assets/gallery-3.jpg";
-import heroBg from "../assets/hero-bg.jpg";
-import treatmentsBg from "../assets/treatments-bg.jpg";
-import productsBg from "../assets/products-bg.jpg";
 import { phoneNumber } from "../components/Layout";
 
 export const Route = createFileRoute("/gallery")({
@@ -20,16 +17,27 @@ export const Route = createFileRoute("/gallery")({
   component: Gallery,
 });
 
-const images = [
-  { src: g1, title: "Clinic Treatment Room", titleTam: "சிகிச்சை அறை" },
-  { src: heroBg, title: "Siddha Herb Preparation", titleTam: "மூலிகை தயாரிப்பு" },
-  { src: g2, title: "Fresh Medicinal Herbs", titleTam: "மூலிகைகள்" },
-  { src: treatmentsBg, title: "Acupuncture Therapy", titleTam: "அக்குபஞ்சர் சிகிச்சை" },
-  { src: g3, title: "Sterile Clinical Needles", titleTam: "அக்குபஞ்சர் ஊசிகள்" },
-  { src: productsBg, title: "Natural Herbal Products", titleTam: "மூலிகை பொருட்கள்" },
-];
-
 function Gallery() {
+  const [images, setImages] = useState<{src: string, title: string, titleTam: string}[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/gallery`)
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          const formatted = data.map((url, i) => ({
+            src: url,
+            title: `Thulir Gallery ${i + 1}`,
+            titleTam: "புகைப்படத் தொகுப்பு"
+          }));
+          setImages(formatted);
+        }
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <>
       <section className="relative isolate overflow-hidden">
@@ -77,22 +85,30 @@ function Gallery() {
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {images.map((img, i) => (
-              <div key={i} className="group rounded-2xl overflow-hidden border border-border bg-card shadow-sm hover:shadow-md transition-shadow">
-                <div className="overflow-hidden aspect-[4/3] relative">
-                  <img 
-                    src={img.src} 
-                    alt={img.title} 
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" 
-                    loading="lazy" 
-                  />
-                </div>
-                <div className="p-4 border-t border-border bg-card">
-                  <h4 className="font-bold text-foreground text-sm">{img.title}</h4>
-                  <p className="text-xs text-leaf font-tamil mt-0.5">{img.titleTam}</p>
-                </div>
+            {loading ? (
+              <div className="col-span-full py-20 text-center text-muted-foreground flex flex-col items-center gap-3">
+                 <ImageIcon className="h-10 w-10 animate-pulse opacity-50" />
+                 <p className="font-medium animate-pulse">Loading gallery...</p>
               </div>
-            ))}
+            ) : images.length === 0 ? (
+              <div className="col-span-full py-20 text-center text-muted-foreground">
+                 <ImageIcon className="h-12 w-12 mx-auto mb-3 opacity-20" />
+                 <p className="font-medium">No images have been uploaded to the gallery yet.</p>
+              </div>
+            ) : (
+              images.map((img, i) => (
+                <div key={i} className="group rounded-2xl overflow-hidden border border-border bg-card shadow-sm hover:shadow-md transition-shadow">
+                  <div className="overflow-hidden aspect-[4/3] relative">
+                    <img 
+                      src={img.src} 
+                      alt="Thulir Healthcare Gallery" 
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                      loading="lazy" 
+                    />
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </section>

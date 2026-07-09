@@ -6,7 +6,7 @@ import { phoneNumber } from "../components/Layout";
 import { useProducts } from "@/lib/products-context";
 import { useCart, inr } from "@/lib/cart";
 import { API_BASE_URL } from "@/lib/api";
-import { Star, MessageCircle, X } from "lucide-react";
+import { Star, MessageCircle, X, Search as SearchIcon, Filter } from "lucide-react";
 
 export const Route = createFileRoute("/products")({
   head: () => ({
@@ -33,9 +33,9 @@ function AddButton({ productId }: { productId: string }) {
         setAdded(true);
         setTimeout(() => setAdded(false), 1400);
       }}
-      className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-leaf px-4 py-2 text-sm font-semibold text-leaf-foreground transition-colors hover:bg-leaf/90"
+      className="inline-flex flex-1 items-center justify-center gap-1.5 sm:gap-2 rounded-full bg-leaf px-2 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold text-leaf-foreground transition-colors hover:bg-leaf/90"
     >
-      {added ? <><Check className="h-4 w-4" /> Added</> : <><ShoppingCart className="h-4 w-4" /> Add to Cart</>}
+      {added ? <><Check className="h-3 w-3 sm:h-4 sm:w-4" /> Added</> : <><ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" /> <span className="hidden sm:inline">Add to Cart</span><span className="sm:hidden">Add</span></>}
     </button>
   );
 }
@@ -157,7 +157,18 @@ function ReviewsModal({ productId, productTitle, onClose }: { productId: string;
 
 function Products() {
   const { products } = useProducts();
-  const [reviewModalProduct, setReviewModalProduct] = useState<{id: string, title: string} | null>(null);
+  const [reviewModalProduct, setReviewModalProduct] = useState<{ id: string, title: string } | null>(null);
+  const [selectedTag, setSelectedTag] = useState<string>("All");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const allTags = ["All", ...Array.from(new Set(products.map((p) => p.tag)))];
+
+  const filteredProducts = products.filter((p) => {
+    const matchesTag = selectedTag === "All" || p.tag === selectedTag;
+    const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.desc.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesTag && matchesSearch;
+  });
 
   return (
     <>
@@ -178,73 +189,105 @@ function Products() {
         </div>
       </section>
 
-      <section className="px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {products.map((c) => {
-              const reviewCount = c.reviews?.length || 0;
-              const avgRating = reviewCount > 0 
-                ? (c.reviews!.reduce((sum: number, r: any) => sum + r.rating, 0) / reviewCount).toFixed(1) 
-                : null;
-              
-              return (
-              <div key={c.id} className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl">
-                <div className="relative aspect-square overflow-hidden">
-                  <img src={c.image} alt={c.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" width={800} height={800} />
-                  <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-leaf px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-leaf-foreground">
-                    <Leaf className="h-3 w-3" /> {c.tag}
-                  </span>
-                </div>
-                <div className="flex flex-1 flex-col p-5">
-                  <h3 className="text-lg font-bold text-card-foreground">{c.title}</h3>
-                  <p className="mt-1 flex-1 text-sm text-muted-foreground">{c.desc}</p>
-                  <div className="mt-3 flex items-baseline gap-2">
-                    <span className="text-xl font-bold text-foreground">{inr(c.price)}</span>
-                    {c.mrp && <span className="text-sm text-muted-foreground line-through">{inr(c.mrp)}</span>}
-                  </div>
-                  <div className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
-                    <Star className={`h-4 w-4 ${avgRating ? 'fill-yellow-400 text-yellow-400' : 'text-muted'}`} />
-                    {avgRating ? (
-                      <><span className="font-medium text-foreground">{avgRating}</span> ({reviewCount} {reviewCount === 1 ? 'review' : 'reviews'})</>
-                    ) : (
-                      <span>No reviews yet</span>
-                    )}
-                  </div>
-                  {c.reviews && c.reviews.length > 0 && (
-                    <div className="mt-3 rounded-lg bg-muted/30 p-3 text-xs italic text-muted-foreground line-clamp-2 border border-border/50">
-                      "{c.reviews[0].comment}" <span className="font-semibold text-foreground/80">— {c.reviews[0].name}</span>
-                    </div>
-                  )}
-                  <div className="mt-4 flex gap-2">
-                    <AddButton productId={c.id} />
-                    <button
-                      onClick={() => setReviewModalProduct({ id: c.id, title: c.title })}
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border text-foreground hover:text-leaf hover:bg-leaf/10"
-                      title="Reviews"
-                    >
-                      <MessageCircle className="h-4 w-4" />
-                    </button>
-                    <a
-                      href={`tel:+91${phoneNumber}`}
-                      aria-label="Call"
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border text-foreground hover:text-leaf hover:bg-leaf/10"
-                    >
-                      <Phone className="h-4 w-4" />
-                    </a>
-                  </div>
-                </div>
-              </div>
-              );
-            })}
+      <section className="px-4 py-12 sm:px-6 lg:px-8 bg-muted/10 border-b border-border/50">
+        <div className="mx-auto max-w-7xl flex flex-col sm:flex-row gap-6 items-center justify-between">
+          <div className="flex items-center gap-3 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0 scrollbar-hide">
+            <div className="flex items-center gap-2 text-muted-foreground mr-2 font-medium text-sm shrink-0">
+              <Filter className="h-4 w-4" /> Filter:
+            </div>
+            {allTags.map((tag) => (
+              <button
+                key={tag}
+                onClick={() => setSelectedTag(tag)}
+                className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-semibold transition-colors border ${selectedTag === tag
+                    ? 'bg-leaf border-leaf text-white shadow-sm'
+                    : 'bg-background border-border text-muted-foreground hover:border-leaf/50 hover:text-foreground'
+                  }`}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+          <div className="relative w-full sm:w-72 shrink-0">
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full rounded-full border border-border bg-background py-2.5 pl-10 pr-4 text-sm shadow-sm transition-colors focus:border-leaf focus:outline-none focus:ring-1 focus:ring-leaf"
+            />
           </div>
         </div>
       </section>
 
+      <section className="px-4 py-12 sm:py-16 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          {filteredProducts.length === 0 ? (
+            <div className="text-center py-20">
+              <p className="text-lg text-muted-foreground">No products found matching your criteria.</p>
+              <button onClick={() => { setSelectedTag("All"); setSearchQuery(""); }} className="mt-4 text-leaf font-semibold hover:underline">Clear Filters</button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
+              {filteredProducts.map((c) => {
+                const reviewCount = c.reviews?.length || 0;
+                const avgRating = reviewCount > 0
+                  ? (c.reviews!.reduce((sum: number, r: any) => sum + r.rating, 0) / reviewCount).toFixed(1)
+                  : null;
+
+                return (
+                  <div key={c.id} className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all hover:-translate-y-1 hover:shadow-md">
+                    <div className="relative aspect-square overflow-hidden">
+                      <img src={c.image} alt={c.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" width={800} height={800} />
+                      <span className="absolute left-2 top-2 sm:left-3 sm:top-3 inline-flex items-center gap-1 rounded-full bg-leaf px-2 py-0.5 sm:px-3 sm:py-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-leaf-foreground">
+                        <Leaf className="h-2.5 w-2.5 sm:h-3 sm:w-3" /> {c.tag}
+                      </span>
+                    </div>
+                    <div className="flex flex-1 flex-col p-3 sm:p-5">
+                      <h3 className="text-sm sm:text-lg font-bold text-card-foreground leading-tight line-clamp-1">{c.title}</h3>
+                      <p className="mt-1 flex-1 text-xs sm:text-sm text-muted-foreground line-clamp-2">{c.desc}</p>
+                      <div className="mt-2 sm:mt-3 flex items-baseline gap-1.5 sm:gap-2">
+                        <span className="text-base sm:text-xl font-bold text-foreground">{inr(c.price)}</span>
+                        {c.mrp && <span className="text-[10px] sm:text-sm text-muted-foreground line-through">{inr(c.mrp)}</span>}
+                      </div>
+                      <div className="mt-1 flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-muted-foreground">
+                        <Star className={`h-3 w-3 sm:h-4 sm:w-4 ${avgRating ? 'fill-yellow-400 text-yellow-400' : 'text-muted'}`} />
+                        {avgRating ? (
+                          <><span className="font-medium text-foreground">{avgRating}</span> ({reviewCount})</>
+                        ) : (
+                          <span>No reviews</span>
+                        )}
+                      </div>
+                      {c.reviews && c.reviews.length > 0 && (
+                        <div className="hidden sm:block mt-3 rounded-lg bg-muted/30 p-2 sm:p-3 text-xs italic text-muted-foreground line-clamp-2 border border-border/50">
+                          "{c.reviews[0].comment}" <span className="font-semibold text-foreground/80">— {c.reviews[0].name}</span>
+                        </div>
+                      )}
+                      <div className="mt-3 sm:mt-4 flex gap-1.5 sm:gap-2">
+                        <AddButton productId={c.id} />
+                        <button
+                          onClick={() => setReviewModalProduct({ id: c.id, title: c.title })}
+                          className="hidden sm:inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border text-foreground hover:text-leaf hover:bg-leaf/10"
+                          title="Reviews"
+                        >
+                          <MessageCircle className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </section>
+
       {reviewModalProduct && (
-        <ReviewsModal 
-          productId={reviewModalProduct.id} 
-          productTitle={reviewModalProduct.title} 
-          onClose={() => setReviewModalProduct(null)} 
+        <ReviewsModal
+          productId={reviewModalProduct.id}
+          productTitle={reviewModalProduct.title}
+          onClose={() => setReviewModalProduct(null)}
         />
       )}
     </>

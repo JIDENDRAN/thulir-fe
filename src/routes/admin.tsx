@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { Plus, Pencil, Trash2, X, Check, Image as ImageIcon, Leaf, ShieldAlert, Lock, User, LogOut, Package, MessageCircle, Calendar, Settings, Smartphone, RefreshCw } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Check, Image as ImageIcon, Leaf, ShieldAlert, Lock, User, LogOut, Package, MessageCircle, Calendar, Settings, Smartphone, RefreshCw, Upload } from "lucide-react";
 import { useProducts } from "@/lib/products-context";
 import { fetchApi } from "@/lib/api";
 import { inr } from "@/lib/cart";
@@ -50,7 +50,7 @@ function AdminPortal() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // Tabs
-  const [activeTab, setActiveTab] = useState<"products" | "orders" | "appointments" | "patients" | "settings">("products");
+  const [activeTab, setActiveTab] = useState<"products" | "gallery" | "orders" | "appointments" | "patients" | "settings">("products");
 
   // Orders State
   const [orders, setOrders] = useState<any[]>([]);
@@ -66,6 +66,38 @@ function AdminPortal() {
 
   // WhatsApp State
   const [whatsappSettings, setWhatsappSettings] = useState<{connected: boolean, qrCode: string | null}>({ connected: false, qrCode: null });
+
+  // Gallery State
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
+  const [showGalleryModal, setShowGalleryModal] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const loadGallery = async () => {
+    try {
+      const urls = await fetchApi('/gallery');
+      setGalleryImages(urls);
+    } catch (e) {
+      console.error("Failed to load gallery", e);
+    }
+  };
+
+  const handleFileUpload = async (file: File) => {
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      const data = await fetchApi('/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      return data.url;
+    } catch (e) {
+      alert("Failed to upload image");
+      throw e;
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -113,6 +145,10 @@ function AdminPortal() {
           }
         };
         loadPatients();
+      }
+
+      if (activeTab === "gallery") {
+        loadGallery();
       }
 
       if (activeTab === "settings") {
@@ -242,9 +278,7 @@ function AdminPortal() {
       <div className="bg-earth/10 min-h-screen py-20 px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center">
         <div className="mx-auto w-full max-w-md">
           <div className="text-center mb-8">
-            <div className="mx-auto h-12 w-12 rounded-full bg-leaf/10 flex items-center justify-center text-leaf mb-3">
-              <Leaf className="h-6 w-6" />
-            </div>
+            <img src="/logo.png" alt="Thulir Healthcare Logo" className="mx-auto h-16 w-16 object-contain mb-3" />
             <h2 className="text-3xl font-extrabold text-foreground tracking-tight">Thulir Healthcare</h2>
             <p className="text-sm text-muted-foreground mt-2">Admin Portal Login</p>
           </div>
@@ -338,7 +372,7 @@ function AdminPortal() {
 
         {/* Tabs */}
         <div className="flex items-center gap-4 border-b border-border mb-8 overflow-x-auto">
-          {["products", "orders", "appointments", "patients", "settings"].map((tab) => (
+          {["products", "gallery", "orders", "appointments", "patients", "settings"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab as any)}
@@ -443,38 +477,50 @@ function AdminPortal() {
                 <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">
                   Product Image Source
                 </label>
-                <div className="grid gap-4 sm:grid-cols-2 mt-2">
-                  <div>
-                    <span className="block text-[11px] text-muted-foreground mb-1 font-semibold">Choose Clinical Preset</span>
-                    <select
-                      value={image}
-                      onChange={(e) => {
-                        setImage(e.target.value);
-                        setCustomImage("");
+                <div className="flex flex-wrap items-center gap-3 mt-2">
+                  <label className="cursor-pointer inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-semibold hover:bg-muted transition-colors">
+                    {isUploading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                    {isUploading ? "Uploading..." : "Upload New Image"}
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      className="hidden" 
+                      disabled={isUploading}
+                      onChange={async (e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          try {
+                            const url = await handleFileUpload(e.target.files[0]);
+                            setCustomImage(url);
+                            setImage("");
+                            loadGallery(); // Refresh gallery in background
+                          } catch(err) {
+                            // Handled in helper
+                          }
+                        }
                       }}
-                      className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-leaf focus:outline-none"
-                    >
-                      {IMAGE_PRESETS.map((preset) => (
-                        <option key={preset.value} value={preset.value}>
-                          {preset.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <span className="block text-[11px] text-muted-foreground mb-1 font-semibold">Or Paste Custom Image URL</span>
-                    <input
-                      type="text"
-                      value={customImage}
-                      onChange={(e) => {
-                        setCustomImage(e.target.value);
-                        setImage("");
-                      }}
-                      className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-leaf focus:outline-none"
-                      placeholder="https://images.unsplash.com/..."
                     />
-                  </div>
+                  </label>
+                  
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      loadGallery();
+                      setShowGalleryModal(true);
+                    }}
+                    className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-semibold hover:bg-muted transition-colors"
+                  >
+                    <ImageIcon className="h-4 w-4" />
+                    Select from Gallery
+                  </button>
                 </div>
+                
+                {/* Preview */}
+                {(customImage || image) && (
+                  <div className="mt-4">
+                    <span className="block text-[11px] text-muted-foreground mb-1 font-semibold">Image Preview</span>
+                    <img src={customImage || image} className="h-24 w-24 object-cover rounded-lg border border-border shadow-sm" alt="Preview" />
+                  </div>
+                )}
               </div>
 
               <div className="flex justify-end gap-2 border-t border-border pt-4 mt-6">
@@ -525,10 +571,52 @@ function AdminPortal() {
           </div>
         )}
 
+        {/* Gallery Selection Modal */}
+        {showGalleryModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+            <div className="w-full max-w-4xl max-h-[80vh] flex flex-col rounded-2xl bg-card border border-border shadow-xl">
+              <div className="flex items-center justify-between border-b border-border p-5">
+                <h3 className="font-bold text-lg text-foreground">Select Image from Gallery</h3>
+                <button onClick={() => setShowGalleryModal(false)} className="text-muted-foreground hover:text-foreground">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="p-5 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 bg-muted/20">
+                {galleryImages.length === 0 ? (
+                  <p className="col-span-full text-center text-muted-foreground py-10 font-medium">No images in gallery yet.</p>
+                ) : (
+                  galleryImages.map((url, i) => (
+                    <div 
+                      key={i} 
+                      onClick={() => {
+                        setCustomImage(url);
+                        setImage("");
+                        setShowGalleryModal(false);
+                      }}
+                      className="aspect-square rounded-xl border-2 border-transparent hover:border-leaf overflow-hidden cursor-pointer transition-all hover:scale-105 shadow-sm bg-background"
+                    >
+                      <img src={url} className="w-full h-full object-cover" alt="Gallery item" />
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Catalog Table */}
         <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-          <div className="p-5 border-b border-border bg-muted/40">
+          <div className="p-5 border-b border-border bg-muted/40 flex items-center justify-between">
             <h3 className="font-bold text-lg text-foreground">Catalog List ({products.length} Products)</h3>
+            <button
+              onClick={() => {
+                resetForm();
+                setIsAdding(true);
+              }}
+              className="inline-flex items-center gap-2 rounded-full bg-leaf px-4 py-2 text-xs font-bold text-leaf-foreground shadow-sm hover:bg-leaf/90 transition-transform hover:scale-105"
+            >
+              <Plus className="h-4 w-4" /> Add Product
+            </button>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left text-sm text-muted-foreground">
@@ -597,6 +685,27 @@ function AdminPortal() {
           </div>
         </div>
         </>
+        ) : activeTab === "gallery" ? (
+          <GalleryView 
+            images={galleryImages} 
+            onUpload={async (e) => {
+              if (e.target.files && e.target.files[0]) {
+                await handleFileUpload(e.target.files[0]);
+                loadGallery();
+              }
+            }}
+            onDelete={async (url) => {
+              const filename = url.split('/').pop();
+              if (!filename) return;
+              try {
+                await fetchApi(`/gallery/${filename}`, { method: 'DELETE' });
+                loadGallery();
+              } catch (err) {
+                alert("Failed to delete image.");
+              }
+            }}
+            isUploading={isUploading}
+          />
         ) : activeTab === "orders" ? (
           <OrdersView orders={orders} isLoading={isLoadingOrders} />
         ) : activeTab === "appointments" ? (
@@ -605,6 +714,55 @@ function AdminPortal() {
           <PatientsView patients={patients} isLoading={isLoadingPatients} />
         ) : (
           <SettingsView whatsappSettings={whatsappSettings} disconnectWhatsapp={disconnectWhatsapp} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function GalleryView({ images, onUpload, onDelete, isUploading }: { images: string[], onUpload: (e: any) => void, onDelete: (url: string) => void, isUploading: boolean }) {
+  return (
+    <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+      <div className="p-5 border-b border-border bg-muted/40 flex items-center justify-between">
+        <h3 className="font-bold text-lg text-foreground">Image Gallery</h3>
+        <label className="cursor-pointer inline-flex items-center gap-2 rounded-full bg-leaf px-4 py-2 text-xs font-bold text-leaf-foreground shadow-sm hover:bg-leaf/90 transition-transform hover:scale-105">
+          {isUploading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+          {isUploading ? "Uploading..." : "Upload New Image"}
+          <input 
+            type="file" 
+            accept="image/*" 
+            className="hidden" 
+            disabled={isUploading}
+            onChange={onUpload}
+          />
+        </label>
+      </div>
+      <div className="p-6">
+        {images.length === 0 ? (
+          <div className="text-center py-20 text-muted-foreground font-medium">
+            <ImageIcon className="h-12 w-12 mx-auto mb-3 opacity-20" />
+            No images uploaded yet.
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {images.map((url, i) => (
+              <div key={i} className="group relative aspect-square overflow-hidden rounded-xl border border-border bg-muted shadow-sm">
+                <img src={url} alt="Gallery" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (confirm("Are you sure you want to delete this image?")) {
+                      onDelete(url);
+                    }
+                  }}
+                  className="absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-red-600/90 text-white opacity-0 shadow-md transition-all hover:bg-red-600 group-hover:opacity-100"
+                  aria-label="Delete image"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </div>

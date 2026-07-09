@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Phone, MapPin, Mail, Leaf, Menu, X, ShoppingCart, Calendar } from "lucide-react";
+import { Phone, MapPin, Mail, Leaf, Menu, X, ShoppingCart, Calendar, ChevronDown } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { CartProvider, useCart } from "@/lib/cart";
 import { ProductsProvider } from "@/lib/products-context";
@@ -21,9 +21,7 @@ const nav = [
   { to: "/acupuncture", label: "Acupuncture" },
   { to: "/products", label: "Healthcare Products" },
   { to: "/gallery", label: "Gallery" },
-  { to: "/patient-intake", label: "Patient Intake" },
   { to: "/contact", label: "Contact" },
-  { to: "/admin", label: "Admin" },
 ] as const;
 
 function CartLink({ onClick }: { onClick?: () => void }) {
@@ -52,15 +50,13 @@ function LayoutInner({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/90 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-leaf text-leaf-foreground">
-              <Leaf className="h-5 w-5" />
-            </span>
+            <img src="/logo.png" alt="Thulir Healthcare Logo" className="h-10 w-10 object-contain" />
             <div className="flex flex-col">
               <span className="text-base font-bold leading-tight text-foreground sm:text-lg">{clinicName}</span>
               <span className="text-[10px] font-medium leading-tight text-muted-foreground sm:text-[11px]">{clinicTagline}</span>
             </div>
           </Link>
-          <nav className="hidden items-center gap-6 text-sm font-medium text-foreground lg:flex">
+          <nav className="hidden items-center gap-5 xl:gap-6 text-sm font-medium text-foreground lg:flex">
             {nav.map((n) => (
               <Link
                 key={n.to}
@@ -72,22 +68,24 @@ function LayoutInner({ children }: { children: ReactNode }) {
                 {n.label}
               </Link>
             ))}
+            <div className="group relative py-2">
+              <button className="flex items-center gap-1 transition-colors hover:text-leaf outline-none">
+                Other <ChevronDown className="h-3 w-3" />
+              </button>
+              <div className="absolute top-full right-0 mt-0 hidden w-40 flex-col rounded-xl border border-border/60 bg-background/95 backdrop-blur-md shadow-xl overflow-hidden group-hover:flex transition-all">
+                <Link to="/patient-intake" activeProps={{ className: "bg-leaf/10 text-leaf" }} className="px-4 py-2.5 hover:bg-muted transition-colors text-sm">Patient Intake</Link>
+                <Link to="/admin" activeProps={{ className: "bg-leaf/10 text-leaf" }} className="px-4 py-2.5 hover:bg-muted transition-colors text-sm">Admin</Link>
+              </div>
+            </div>
           </nav>
           <div className="flex items-center gap-2">
             <Link
               to="/book"
-              className="hidden items-center gap-2 rounded-full border border-leaf px-3 py-2 text-sm font-semibold text-leaf transition-colors hover:bg-leaf/10 md:inline-flex"
+              className="hidden items-center gap-2 rounded-full border border-leaf px-4 py-2 text-sm font-semibold text-leaf transition-colors hover:bg-leaf/10 md:inline-flex"
             >
               <Calendar className="h-4 w-4" /> Book
             </Link>
             <CartLink onClick={() => setOpen(false)} />
-            <a
-              href={`tel:+91${phoneNumber}`}
-              className="hidden items-center gap-2 rounded-full bg-leaf px-4 py-2 text-sm font-semibold text-leaf-foreground shadow-sm transition-transform hover:scale-105 sm:inline-flex"
-            >
-              <Phone className="h-4 w-4" />
-              Call
-            </a>
             <button
               type="button"
               aria-label="Toggle menu"
@@ -114,18 +112,26 @@ function LayoutInner({ children }: { children: ReactNode }) {
                 </Link>
               ))}
               <Link
+                to="/patient-intake"
+                onClick={() => setOpen(false)}
+                className="py-2 text-base font-medium text-muted-foreground transition-colors hover:text-leaf"
+              >
+                Patient Intake
+              </Link>
+              <Link
+                to="/admin"
+                onClick={() => setOpen(false)}
+                className="py-2 text-base font-medium text-muted-foreground transition-colors hover:text-leaf"
+              >
+                Admin
+              </Link>
+              <Link
                 to="/book"
                 onClick={() => setOpen(false)}
                 className="py-2 text-base font-medium text-leaf"
               >
                 Book Appointment
               </Link>
-              <a
-                href={`tel:+91${phoneNumber}`}
-                className="mt-2 inline-flex items-center gap-2 rounded-full bg-leaf px-4 py-2 text-sm font-semibold text-leaf-foreground sm:hidden"
-              >
-                <Phone className="h-4 w-4" /> Call +91 {phoneNumber}
-              </a>
             </nav>
           </div>
         )}
@@ -138,9 +144,7 @@ function LayoutInner({ children }: { children: ReactNode }) {
           <div className="grid gap-10 md:grid-cols-3">
             <div>
               <div className="flex items-center gap-2">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-leaf text-leaf-foreground">
-                  <Leaf className="h-5 w-5" />
-                </span>
+                <img src="/logo.png" alt="Thulir Healthcare Logo" className="h-10 w-10 object-contain" />
                 <span className="text-lg font-bold">{clinicName}</span>
               </div>
               <p className="mt-3 text-sm text-forest-foreground/80">

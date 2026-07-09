@@ -170,13 +170,13 @@ function Home() {
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
             
-            {/* Left Column: Simple Clinical Image */}
-            <div>
-              <div className="rounded-2xl overflow-hidden aspect-[4/3] shadow-md border border-border">
+            {/* Left Column: Logo Display */}
+            <div className="flex justify-center items-center h-full w-full py-6 lg:py-0">
+              <div className="relative w-full max-w-md flex items-center justify-center rounded-3xl bg-gradient-to-br from-background via-leaf/5 to-earth/5 p-6 sm:p-8 shadow-sm border border-border/60">
                 <img 
-                  src={treatmentsBg} 
-                  alt="Traditional Siddha herbs and clinical healing" 
-                  className="w-full h-full object-cover"
+                  src="/logo.png" 
+                  alt="Thulir Healthcare Logo" 
+                  className="w-full h-auto object-contain drop-shadow-xl hover:scale-105 transition-transform duration-700 ease-out"
                 />
               </div>
             </div>
@@ -184,48 +184,165 @@ function Home() {
             {/* Right Column: Narrative & Stats */}
             <div className="space-y-6">
               <div className="space-y-2">
-                <span className="text-xs font-bold uppercase tracking-widest text-leaf">
+                <span className="text-sm font-bold uppercase tracking-widest text-leaf">
                   About Us / எங்களைப் பற்றி
                 </span>
-                <h2 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+                <h2 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
                   Thulir Healthcare
                 </h2>
-                <p className="text-lg font-semibold text-earth font-tamil">
+                <p className="text-xl font-semibold text-earth font-tamil mt-1">
                   சித்த மருத்துவம் & அக்குபஞ்சர் கிளினிக்
                 </p>
               </div>
 
-              <div className="space-y-4 text-sm sm:text-base text-muted-foreground leading-relaxed">
+              <div className="space-y-5 text-base sm:text-lg text-muted-foreground leading-relaxed">
                 <p>
                   At <strong>Thulir Healthcare</strong>, we believe true healing starts by addressing the root cause of illnesses rather than merely masking the symptoms. Located in Coimbatore, our clinic integrates the wisdom of ancient <strong>Siddha medicine</strong> with the precision of <strong>clinical Acupuncture</strong> to offer safe, side-effect-free treatments.
                 </p>
-                <p className="font-tamil text-sm text-foreground/80 border-l-2 border-leaf pl-4 py-1 leading-relaxed">
+                <p className="font-tamil text-base sm:text-lg text-foreground/80 border-l-4 border-leaf pl-5 py-2 leading-relaxed">
                   துளிர் ஹெல்த்கேர் கிளினிக்கில், நோயின் அறிகுறிகளுக்கு மட்டும் சிகிச்சை அளிக்காமல், அதன் மூல காரணத்தை கண்டறிந்து பக்கவிளைவுகள் இல்லாத நிரந்தர தீர்வை வழங்குகிறோம். பாரம்பரிய சித்த மருத்துவம் மற்றும் நவீன அக்குபஞ்சர் சிகிச்சைகளை ஒன்றிணைத்து சிறந்த முறையில் குணப்படுத்துகிறோம்.
                 </p>
               </div>
 
-              {/* Stats & Actions */}
-              <div className="pt-6 border-t border-border flex flex-wrap items-center justify-between gap-6">
-                <div className="flex gap-8">
-                  <div>
-                    <span className="block text-2xl font-bold text-foreground">10+ Years</span>
-                    <span className="block text-xs text-muted-foreground uppercase tracking-wider">Experience</span>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* Conditions We Treat Section (Split Layout) */}
+      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-background to-leaf/5">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+            
+            {/* Left Header for Conditions */}
+            <div className="lg:col-span-4 lg:sticky lg:top-32">
+              <span className="text-sm font-bold uppercase tracking-widest text-leaf">
+                Conditions We Treat
+              </span>
+              <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground font-tamil leading-tight">
+                பக்க விளைவுகள் இல்லாத சிகிச்சை
+              </h2>
+              <div className="h-1 w-20 bg-leaf mt-6 rounded-full"></div>
+              <p className="mt-6 text-muted-foreground text-base leading-relaxed">
+                We offer safe, natural, and permanent solutions for various chronic and acute conditions without any harmful side effects.
+              </p>
+            </div>
+            
+            {/* Right List for Conditions */}
+            <div className="lg:col-span-8">
+              <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
+                {[
+                  "தசை பிடிப்பு / சுளுக்கு",
+                  "எலும்பு / தசை / நரம்பு ஆகியவற்றால் ஏற்படும் வலி வீக்கம்",
+                  "முடி உதிர்வு / தலைவலி / மைகிரேன்",
+                  "மூட்டு வலி / சியாட்டிகா",
+                  "பக்கவாதம் / கீல்வாதம் / முகவாதம்",
+                  "கண் சுழற்சி / தூக்கமின்மை",
+                  "மனஅழுத்தம் / கவலை / மன சோர்வு",
+                  "தலைமுடி செலுத்து வளர / இளநரை",
+                  "வயிற்று வலி / வயிற்றுப்புண் (Ulcer)",
+                  "மலச்சிக்கல்",
+                  "சர்க்கரை / கல்லீரல் பாதிப்பு",
+                  "சிறுநீரக சார்ந்த நோய்",
+                  "பித்தப்பை சார்ந்த நோய்",
+                  "சைனஸ் / டஸ்ட் அலர்ஜி",
+                  "தைராய்டு",
+                  "உடல் எடை குறைய / அதிகரிக்க",
+                  "கர்ப்பப்பை சார்ந்த நோய்",
+                  "ஆண்மை குறைவு",
+                  "நரம்புத் தளர்ச்சி",
+                  "குழந்தையின்மை"
+                ].map((condition, idx) => (
+                  <div 
+                    key={idx} 
+                    className="flex items-center gap-3 p-4 rounded-xl bg-card shadow-sm border border-transparent hover:border-leaf/30 hover:shadow-md transition-all group cursor-default"
+                  >
+                    <CheckCircle2 className="h-5 w-5 text-leaf shrink-0 group-hover:scale-110 transition-transform" />
+                    <span className="font-tamil text-foreground/90 font-medium">{condition}</span>
                   </div>
-                  <div>
-                    <span className="block text-2xl font-bold text-foreground">5000+</span>
-                    <span className="block text-xs text-muted-foreground uppercase tracking-wider">Recoveries</span>
-                  </div>
-                </div>
-                
-                <Link
-                  to="/book"
-                  className="inline-flex items-center gap-2 rounded-full bg-leaf px-6 py-3 text-sm font-semibold text-leaf-foreground shadow-sm hover:bg-leaf/90 transition-transform hover:scale-102 cursor-pointer"
-                >
-                  Book Appointment / முன்பதிவு செய்ய <ArrowRight className="h-4 w-4" />
-                </Link>
+                ))}
               </div>
             </div>
 
+          </div>
+
+          <div className="mt-24 pt-24 border-t border-border/40 grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+            
+            {/* Left Header for Therapies */}
+            <div className="lg:col-span-4 lg:sticky lg:top-32">
+              <span className="text-sm font-bold uppercase tracking-widest text-leaf">
+                Our Therapies
+              </span>
+              <h3 className="mt-3 text-3xl sm:text-4xl font-extrabold text-foreground leading-tight">
+                Integrated Natural Healing
+              </h3>
+              <div className="h-1 w-20 bg-leaf mt-6 rounded-full"></div>
+              <p className="mt-6 text-muted-foreground text-base leading-relaxed">
+                Combining the wisdom of traditional Siddha medicine with modern clinical practices.
+              </p>
+            </div>
+
+            {/* Right List for Therapies */}
+            <div className="lg:col-span-8">
+              <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
+                {[
+                  { tamil: "சித்த மருத்துவம்", english: "Siddha Medicine" },
+                  { tamil: "அக்குபஞ்சர்", english: "Acupuncture" },
+                  { tamil: "எலக்ட்ரோ அக்குபஞ்சர்", english: "Electro Acupuncture" },
+                  { tamil: "அக்குபிரசர்", english: "Acupressure" },
+                  { tamil: "பாத அழுத்த சிகிச்சை", english: "Reflexology" },
+                  { tamil: "இயற்கை சிகிச்சை", english: "Naturopathy" }
+                ].map((therapy, idx) => (
+                  <div key={idx} className="flex items-center gap-4 p-5 sm:p-6 rounded-2xl bg-card shadow-sm border border-transparent hover:border-leaf/30 hover:shadow-md transition-all group cursor-default">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-leaf/10 text-leaf shadow-inner group-hover:scale-110 transition-transform">
+                      <Leaf className="h-6 w-6" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="font-tamil font-bold text-lg text-foreground leading-tight">{therapy.tamil}</span>
+                      <span className="text-base text-muted-foreground font-semibold mt-0.5">{therapy.english}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Videos Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-card border-t border-border">
+        <div className="mx-auto max-w-7xl">
+          <div className="text-center mb-12">
+            <span className="text-xs font-bold uppercase tracking-widest text-leaf">
+              Watch & Learn / காணொளிகள்
+            </span>
+            <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+              Featured Videos
+            </h2>
+            <p className="mt-4 text-muted-foreground text-sm max-w-2xl mx-auto leading-relaxed">
+              Learn more about our treatments, patient experiences, and natural healing methods through our videos.
+            </p>
+          </div>
+          
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2 max-w-5xl mx-auto">
+            {[
+              "Y_rBgwDVJ74",
+              "X1b8G9nCFT4",
+              "VAlqZHywbB8",
+              "TgbcE_7_tGs"
+            ].map((videoId, idx) => (
+              <div key={idx} className="relative w-full overflow-hidden rounded-2xl shadow-lg border border-border/50 bg-background" style={{ paddingBottom: '56.25%' }}>
+                <iframe
+                  className="absolute top-0 left-0 w-full h-full"
+                  src={`https://www.youtube.com/embed/${videoId}`}
+                  title="Thulir Healthcare YouTube Video"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </div>
+            ))}
           </div>
         </div>
       </section>
