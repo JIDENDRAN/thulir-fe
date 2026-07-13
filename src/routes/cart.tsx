@@ -71,11 +71,11 @@ function CartPage() {
             </div>
             <div className="flex justify-between">
               <dt className="text-muted-foreground">Shipping</dt>
-              <dd className="font-medium">{total >= 500 ? "Free" : inr(50)}</dd>
+              <dd className="font-medium">Free</dd>
             </div>
             <div className="mt-3 flex justify-between border-t border-border pt-3 text-base">
               <dt className="font-semibold">Total</dt>
-              <dd className="font-bold text-leaf">{inr(total + (total >= 500 ? 0 : 50))}</dd>
+              <dd className="font-bold text-leaf">{inr(total)}</dd>
             </div>
           </dl>
           <Link
