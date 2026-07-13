@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { products as initialProducts, type Product } from "./products-data";
+import { type Product } from "./products-data";
 import { fetchApi } from "./api";
 
 type ProductsCtx = {

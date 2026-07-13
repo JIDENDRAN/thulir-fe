@@ -105,68 +105,39 @@ function Checkout() {
         return;
       }
 
-      // --- RAZORPAY ONLINE PAYMENT ---
-      // Load Razorpay script
+      // --- CASHFREE ONLINE PAYMENT ---
       const script = document.createElement('script');
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';
       script.async = true;
       document.body.appendChild(script);
 
       script.onload = async () => {
         try {
           const { fetchApi } = await import('@/lib/api');
-          const rzpOrder = await fetchApi('/payments/create-order', {
+          const session = await fetchApi('/payments/create-cf-order', {
             method: 'POST',
-            body: JSON.stringify({ amount: grand })
+            body: JSON.stringify({ orderId: order.id })
           });
-
-          const options = {
-            key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_1DP5mmOlF5G5ag", // Use env variable
-            amount: rzpOrder.amount,
-            currency: rzpOrder.currency,
-            name: "Thulir Healthcare",
-            description: "Herbal Products Checkout",
-            order_id: rzpOrder.id,
-            handler: async function (response: any) {
-              // Verify Payment
-              const verifyRes = await fetchApi('/payments/verify', {
-                method: 'POST',
-                body: JSON.stringify({
-                  razorpay_order_id: response.razorpay_order_id,
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_signature: response.razorpay_signature,
-                  orderId: order.id
-                })
-              });
-              if (verifyRes.success) {
-                clear();
-                navigate({ to: "/order-success", search: { id: orderId } });
-              } else {
-                alert("Payment verification failed. Please contact support.");
-              }
-            },
-            prefill: {
-              name: form.name,
-              email: form.email,
-              contact: form.phone
-            },
-            theme: {
-              color: "#307a59" // Leaf color
-            }
-          };
-
-          const rzp = new (window as any).Razorpay(options);
-          rzp.on('payment.failed', function () {
-            alert("Payment failed or cancelled. You can try again.");
-          });
-          rzp.open();
+          
+          if (session.payment_session_id) {
+            const cashfree = (window as any).Cashfree({ mode: "sandbox" });
+            cashfree.checkout({
+              paymentSessionId: session.payment_session_id,
+              redirectTarget: "_self",
+            });
+          } else {
+            alert("Failed to initialize payment gateway.");
+            setPlacing(false);
+          }
         } catch (err) {
-          console.error("Failed to start payment", err);
-          alert("Could not load payment gateway.");
+          console.error(err);
+          alert("Failed to contact payment server.");
+          setPlacing(false);
         }
       };
       script.onerror = () => {
-        alert("Failed to load Razorpay script.");
+        alert("Failed to load Cashfree script.");
+        setPlacing(false);
       };
     } catch (error) {
       console.error(error);
@@ -215,7 +186,7 @@ function Checkout() {
           <div className="rounded-2xl border border-border bg-card p-6">
             <h2 className="text-lg font-bold">Payment Method</h2>
             <div className="mt-4 grid gap-3">
-              <PayOption current={method} value="online" onChange={setMethod} icon={<CreditCard className="h-5 w-5" />} title="Pay Online" desc="UPI, Credit/Debit Cards, Netbanking via Razorpay" />
+              <PayOption current={method} value="online" onChange={setMethod} icon={<CreditCard className="h-5 w-5" />} title="Pay Online" desc="UPI, Credit/Debit Cards, Netbanking via Cashfree" />
               <PayOption current={method} value="cod" onChange={setMethod} icon={<Truck className="h-5 w-5" />} title="Cash on Delivery" desc="Pay when your order arrives" />
             </div>
             <p className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
