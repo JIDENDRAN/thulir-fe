@@ -120,7 +120,8 @@ function Checkout() {
           });
           
           if (session.payment_session_id) {
-            const cashfree = (window as any).Cashfree({ mode: "sandbox" });
+            const cfEnv = import.meta.env.VITE_CASHFREE_ENV || "sandbox";
+            const cashfree = (window as any).Cashfree({ mode: cfEnv });
             cashfree.checkout({
               paymentSessionId: session.payment_session_id,
               redirectTarget: "_self",
