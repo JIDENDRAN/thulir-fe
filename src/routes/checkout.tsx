@@ -32,7 +32,7 @@ function Checkout() {
     notes: "",
   });
 
-  const shipping = total >= 500 ? 0 : 50;
+  const shipping = 0;
   const grand = total + shipping;
 
   if (items.length === 0) {
