@@ -28,11 +28,13 @@ function Checkout() {
     email: "",
     address: "",
     city: "",
+    state: "Tamil Nadu",
     pincode: "",
     notes: "",
   });
 
-  const shipping = 0;
+  const isTamilNadu = form.state === "Tamil Nadu";
+  const shipping = method === "online" ? 0 : (isTamilNadu ? 100 : 200);
   const grand = total + shipping;
 
   if (items.length === 0) {
@@ -57,7 +59,7 @@ function Checkout() {
       `*Customer:* ${form.name}`,
       `*Phone:* +91 ${form.phone}`,
       form.email ? `*Email:* ${form.email}` : "",
-      `*Address:* ${form.address}, ${form.city} - ${form.pincode}`,
+      `*Address:* ${form.address}, ${form.city}, ${form.state} - ${form.pincode}`,
       form.notes ? `*Notes:* ${form.notes}` : "",
       ``,
       `*Items:*`,
@@ -84,7 +86,7 @@ function Checkout() {
           customerName: form.name,
           phone: form.phone,
           email: form.email,
-          address: form.address,
+          address: `${form.address}, ${form.state}`,
           city: form.city,
           pincode: form.pincode,
           notes: form.notes,
@@ -174,6 +176,20 @@ function Checkout() {
               </Field>
               <Field label="City">
                 <input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className={inputCls} />
+              </Field>
+              <Field label="State*">
+                <select 
+                  value={form.state} 
+                  onChange={(e) => setForm({ ...form, state: e.target.value })} 
+                  className={inputCls}
+                >
+                  <option value="Tamil Nadu">Tamil Nadu</option>
+                  <option value="Andhra Pradesh">Andhra Pradesh</option>
+                  <option value="Karnataka">Karnataka</option>
+                  <option value="Kerala">Kerala</option>
+                  <option value="Puducherry">Puducherry</option>
+                  <option value="Other State">Other State</option>
+                </select>
               </Field>
               <Field label="Pincode*">
                 <input value={form.pincode} onChange={(e) => setForm({ ...form, pincode: e.target.value.replace(/\D/g, "").slice(0, 6) })} className={inputCls} inputMode="numeric" />
