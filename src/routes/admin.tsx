@@ -755,7 +755,7 @@ function GalleryView({ images, onUpload, onDelete, isUploading }: { images: stri
                       onDelete(url);
                     }
                   }}
-                  className="absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-red-600/90 text-white opacity-0 shadow-md transition-all hover:bg-red-600 group-hover:opacity-100"
+                  className="absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-red-600/90 text-white shadow-md transition-all hover:bg-red-600"
                   aria-label="Delete image"
                 >
                   <Trash2 className="h-4 w-4" />
