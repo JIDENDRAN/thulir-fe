@@ -17,8 +17,7 @@ export const address = {
 
 const nav = [
   { to: "/", label: "Home" },
-  { to: "/siddha-medicine", label: "Siddha Medicine" },
-  { to: "/acupuncture", label: "Acupuncture" },
+  { to: "/treatments", label: "Treatments" },
   { to: "/products", label: "Healthcare Products" },
   { to: "/gallery", label: "Gallery" },
   { to: "/contact", label: "Contact" },

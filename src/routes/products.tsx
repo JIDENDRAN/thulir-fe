@@ -238,14 +238,16 @@ function Products() {
 
                 return (
                   <div key={c.id} className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all hover:-translate-y-1 hover:shadow-md">
-                    <div className="relative aspect-square overflow-hidden">
+                    <Link to={`/product/${c.id}`} className="relative aspect-square overflow-hidden block">
                       <img src={c.image} alt={c.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" width={800} height={800} />
                       <span className="absolute left-2 top-2 sm:left-3 sm:top-3 inline-flex items-center gap-1 rounded-full bg-leaf px-2 py-0.5 sm:px-3 sm:py-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-leaf-foreground">
                         <Leaf className="h-2.5 w-2.5 sm:h-3 sm:w-3" /> {c.tag}
                       </span>
-                    </div>
+                    </Link>
                     <div className="flex flex-1 flex-col p-3 sm:p-5">
-                      <h3 className="text-sm sm:text-lg font-bold text-card-foreground leading-tight line-clamp-1">{c.title}</h3>
+                      <Link to={`/product/${c.id}`} className="hover:text-leaf">
+                        <h3 className="text-sm sm:text-lg font-bold text-card-foreground leading-tight line-clamp-1">{c.title}</h3>
+                      </Link>
                       <p className="mt-1 flex-1 text-xs sm:text-sm text-muted-foreground line-clamp-2">{c.desc}</p>
                       <div className="mt-2 sm:mt-3 flex items-baseline gap-1.5 sm:gap-2">
                         <span className="text-base sm:text-xl font-bold text-foreground">{inr(c.price)}</span>

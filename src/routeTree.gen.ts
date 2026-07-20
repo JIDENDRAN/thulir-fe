@@ -9,8 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TreatmentsRouteImport } from './routes/treatments'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as SiddhaMedicineRouteImport } from './routes/siddha-medicine'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as PatientIntakeRouteImport } from './routes/patient-intake'
 import { Route as OrderSuccessRouteImport } from './routes/order-success'
@@ -20,17 +20,17 @@ import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as BookRouteImport } from './routes/book'
 import { Route as AdminRouteImport } from './routes/admin'
-import { Route as AcupunctureRouteImport } from './routes/acupuncture'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProductIdRouteImport } from './routes/product.$id'
 
+const TreatmentsRoute = TreatmentsRouteImport.update({
+  id: '/treatments',
+  path: '/treatments',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SiddhaMedicineRoute = SiddhaMedicineRouteImport.update({
-  id: '/siddha-medicine',
-  path: '/siddha-medicine',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProductsRoute = ProductsRouteImport.update({
@@ -78,20 +78,19 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AcupunctureRoute = AcupunctureRouteImport.update({
-  id: '/acupuncture',
-  path: '/acupuncture',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProductIdRoute = ProductIdRouteImport.update({
+  id: '/product/$id',
+  path: '/product/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/acupuncture': typeof AcupunctureRoute
   '/admin': typeof AdminRoute
   '/book': typeof BookRoute
   '/cart': typeof CartRoute
@@ -101,12 +100,12 @@ export interface FileRoutesByFullPath {
   '/order-success': typeof OrderSuccessRoute
   '/patient-intake': typeof PatientIntakeRoute
   '/products': typeof ProductsRoute
-  '/siddha-medicine': typeof SiddhaMedicineRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/treatments': typeof TreatmentsRoute
+  '/product/$id': typeof ProductIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/acupuncture': typeof AcupunctureRoute
   '/admin': typeof AdminRoute
   '/book': typeof BookRoute
   '/cart': typeof CartRoute
@@ -116,13 +115,13 @@ export interface FileRoutesByTo {
   '/order-success': typeof OrderSuccessRoute
   '/patient-intake': typeof PatientIntakeRoute
   '/products': typeof ProductsRoute
-  '/siddha-medicine': typeof SiddhaMedicineRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/treatments': typeof TreatmentsRoute
+  '/product/$id': typeof ProductIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/acupuncture': typeof AcupunctureRoute
   '/admin': typeof AdminRoute
   '/book': typeof BookRoute
   '/cart': typeof CartRoute
@@ -132,14 +131,14 @@ export interface FileRoutesById {
   '/order-success': typeof OrderSuccessRoute
   '/patient-intake': typeof PatientIntakeRoute
   '/products': typeof ProductsRoute
-  '/siddha-medicine': typeof SiddhaMedicineRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/treatments': typeof TreatmentsRoute
+  '/product/$id': typeof ProductIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/acupuncture'
     | '/admin'
     | '/book'
     | '/cart'
@@ -149,12 +148,12 @@ export interface FileRouteTypes {
     | '/order-success'
     | '/patient-intake'
     | '/products'
-    | '/siddha-medicine'
     | '/sitemap.xml'
+    | '/treatments'
+    | '/product/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/acupuncture'
     | '/admin'
     | '/book'
     | '/cart'
@@ -164,12 +163,12 @@ export interface FileRouteTypes {
     | '/order-success'
     | '/patient-intake'
     | '/products'
-    | '/siddha-medicine'
     | '/sitemap.xml'
+    | '/treatments'
+    | '/product/$id'
   id:
     | '__root__'
     | '/'
-    | '/acupuncture'
     | '/admin'
     | '/book'
     | '/cart'
@@ -179,13 +178,13 @@ export interface FileRouteTypes {
     | '/order-success'
     | '/patient-intake'
     | '/products'
-    | '/siddha-medicine'
     | '/sitemap.xml'
+    | '/treatments'
+    | '/product/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AcupunctureRoute: typeof AcupunctureRoute
   AdminRoute: typeof AdminRoute
   BookRoute: typeof BookRoute
   CartRoute: typeof CartRoute
@@ -195,24 +194,25 @@ export interface RootRouteChildren {
   OrderSuccessRoute: typeof OrderSuccessRoute
   PatientIntakeRoute: typeof PatientIntakeRoute
   ProductsRoute: typeof ProductsRoute
-  SiddhaMedicineRoute: typeof SiddhaMedicineRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TreatmentsRoute: typeof TreatmentsRoute
+  ProductIdRoute: typeof ProductIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/treatments': {
+      id: '/treatments'
+      path: '/treatments'
+      fullPath: '/treatments'
+      preLoaderRoute: typeof TreatmentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/siddha-medicine': {
-      id: '/siddha-medicine'
-      path: '/siddha-medicine'
-      fullPath: '/siddha-medicine'
-      preLoaderRoute: typeof SiddhaMedicineRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/products': {
@@ -278,13 +278,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/acupuncture': {
-      id: '/acupuncture'
-      path: '/acupuncture'
-      fullPath: '/acupuncture'
-      preLoaderRoute: typeof AcupunctureRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -292,12 +285,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/product/$id': {
+      id: '/product/$id'
+      path: '/product/$id'
+      fullPath: '/product/$id'
+      preLoaderRoute: typeof ProductIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AcupunctureRoute: AcupunctureRoute,
   AdminRoute: AdminRoute,
   BookRoute: BookRoute,
   CartRoute: CartRoute,
@@ -307,8 +306,9 @@ const rootRouteChildren: RootRouteChildren = {
   OrderSuccessRoute: OrderSuccessRoute,
   PatientIntakeRoute: PatientIntakeRoute,
   ProductsRoute: ProductsRoute,
-  SiddhaMedicineRoute: SiddhaMedicineRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TreatmentsRoute: TreatmentsRoute,
+  ProductIdRoute: ProductIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

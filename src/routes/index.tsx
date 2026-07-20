@@ -47,7 +47,7 @@ function Home() {
                 துளிர் ஹெல்த்கேர்
               </span>
               <span className="text-xl font-semibold text-earth sm:text-2xl lg:text-3xl mt-1.5">
-                Siddha & Acupuncture Clinic
+                Siddha Treatment & Acupuncture Clinic
               </span>
             </h1>
             <p className="mt-6 text-lg text-white/90">
@@ -61,13 +61,13 @@ function Home() {
                 <Phone className="h-5 w-5" /> Free Consultation
               </a>
               <Link
-                to="/siddha-medicine"
+                to="/treatments"
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-white/40 bg-white/10 px-6 py-3 text-base font-semibold text-white backdrop-blur transition-colors hover:bg-white/20"
               >
                 Siddha Medicine <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
-                to="/acupuncture"
+                to="/treatments"
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-white/40 bg-white/10 px-6 py-3 text-base font-semibold text-white backdrop-blur transition-colors hover:bg-white/20"
               >
                 Acupuncture <ArrowRight className="h-4 w-4" />
@@ -111,7 +111,7 @@ function Home() {
 
       <section className="px-4 pb-16 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-3">
-          <Link to="/siddha-medicine" className="group relative isolate overflow-hidden rounded-3xl shadow-lg min-h-[320px] flex flex-col justify-end">
+          <Link to="/treatments" className="group relative isolate overflow-hidden rounded-3xl shadow-lg min-h-[320px] flex flex-col justify-end">
             <img src={heroBg} alt="Siddha herbs and preparation" className="absolute inset-0 -z-10 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
             <div className="absolute inset-0 -z-10 bg-gradient-to-t from-forest via-forest/60 to-transparent" />
             <div className="p-6 text-leaf-foreground">
@@ -128,7 +128,7 @@ function Home() {
               </span>
             </div>
           </Link>
-          <Link to="/acupuncture" className="group relative isolate overflow-hidden rounded-3xl shadow-lg min-h-[320px] flex flex-col justify-end">
+          <Link to="/treatments" className="group relative isolate overflow-hidden rounded-3xl shadow-lg min-h-[320px] flex flex-col justify-end">
             <img src={treatmentsBg} alt="Acupuncture session" className="absolute inset-0 -z-10 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
             <div className="absolute inset-0 -z-10 bg-gradient-to-t from-forest via-forest/60 to-transparent" />
             <div className="p-6 text-leaf-foreground">
@@ -169,13 +169,13 @@ function Home() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-card border-t border-b border-border">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
-            
+
             {/* Left Column: Logo Display */}
             <div className="flex justify-center items-center h-full w-full py-6 lg:py-0">
               <div className="relative w-full max-w-md flex items-center justify-center rounded-3xl bg-gradient-to-br from-background via-leaf/5 to-earth/5 p-6 sm:p-8 shadow-sm border border-border/60">
-                <img 
-                  src="/logo.png" 
-                  alt="Thulir Healthcare Logo" 
+                <img
+                  src="/logo.png"
+                  alt="Thulir Healthcare Logo"
                   className="w-full h-auto object-contain drop-shadow-xl hover:scale-105 transition-transform duration-700 ease-out"
                 />
               </div>
@@ -214,7 +214,7 @@ function Home() {
       <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-background to-leaf/5">
         <div className="mx-auto max-w-7xl">
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-            
+
             {/* Left Header for Conditions */}
             <div className="lg:col-span-4 lg:sticky lg:top-32">
               <span className="text-sm font-bold uppercase tracking-widest text-leaf">
@@ -228,7 +228,7 @@ function Home() {
                 We offer safe, natural, and permanent solutions for various chronic and acute conditions without any harmful side effects.
               </p>
             </div>
-            
+
             {/* Right List for Conditions */}
             <div className="lg:col-span-8">
               <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
@@ -254,8 +254,8 @@ function Home() {
                   "நரம்புத் தளர்ச்சி",
                   "குழந்தையின்மை"
                 ].map((condition, idx) => (
-                  <div 
-                    key={idx} 
+                  <div
+                    key={idx}
                     className="flex items-center gap-3 p-4 rounded-xl bg-card shadow-sm border border-transparent hover:border-leaf/30 hover:shadow-md transition-all group cursor-default"
                   >
                     <CheckCircle2 className="h-5 w-5 text-leaf shrink-0 group-hover:scale-110 transition-transform" />
@@ -268,7 +268,7 @@ function Home() {
           </div>
 
           <div className="mt-24 pt-24 border-t border-border/40 grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-            
+
             {/* Left Header for Therapies */}
             <div className="lg:col-span-4 lg:sticky lg:top-32">
               <span className="text-sm font-bold uppercase tracking-widest text-leaf">
@@ -325,7 +325,7 @@ function Home() {
               Learn more about our treatments, patient experiences, and natural healing methods through our videos.
             </p>
           </div>
-          
+
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2 max-w-5xl mx-auto">
             {[
               "Y_rBgwDVJ74",

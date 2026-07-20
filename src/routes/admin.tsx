@@ -50,7 +50,7 @@ function AdminPortal() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // Tabs
-  const [activeTab, setActiveTab] = useState<"products" | "gallery" | "orders" | "appointments" | "patients" | "settings">("products");
+  const [activeTab, setActiveTab] = useState<"products" | "treatments" | "gallery" | "orders" | "appointments" | "patients" | "settings">("products");
 
   // Orders State
   const [orders, setOrders] = useState<any[]>([]);
@@ -71,6 +71,25 @@ function AdminPortal() {
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [showGalleryModal, setShowGalleryModal] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+
+  // Treatments State
+  const [treatmentItems, setTreatmentItems] = useState<any[]>([]);
+  const [isLoadingTreatments, setIsLoadingTreatments] = useState(false);
+  const [isAddingTreatment, setIsAddingTreatment] = useState(false);
+  const [editingTreatmentId, setEditingTreatmentId] = useState<string | null>(null);
+  const [treatmentTitle, setTreatmentTitle] = useState("");
+  const [treatmentDesc, setTreatmentDesc] = useState("");
+  const [treatmentImage, setTreatmentImage] = useState("");
+  const [treatmentCategory, setTreatmentCategory] = useState("SIDDHA");
+
+  const resetTreatmentForm = () => {
+    setTreatmentTitle("");
+    setTreatmentDesc("");
+    setTreatmentImage("");
+    setTreatmentCategory("SIDDHA");
+    setEditingTreatmentId(null);
+    setIsAddingTreatment(false);
+  };
 
   const loadGallery = async () => {
     try {
@@ -147,6 +166,21 @@ function AdminPortal() {
         loadPatients();
       }
 
+      if (activeTab === "treatments" && treatmentItems.length === 0) {
+        const loadTreatments = async () => {
+          setIsLoadingTreatments(true);
+          try {
+            const data = await fetchApi('/treatment-items');
+            setTreatmentItems(data);
+          } catch (err) {
+            console.error("Failed to load treatments", err);
+          } finally {
+            setIsLoadingTreatments(false);
+          }
+        };
+        loadTreatments();
+      }
+
       if (activeTab === "gallery") {
         loadGallery();
       }
@@ -187,6 +221,7 @@ function AdminPortal() {
   const [price, setPrice] = useState("");
   const [mrp, setMrp] = useState("");
   const [desc, setDesc] = useState("");
+  const [specifications, setSpecifications] = useState<{key: string, value: string}[]>([]);
   const [image, setImage] = useState(capsules);
   const [customImage, setCustomImage] = useState("");
 
@@ -196,6 +231,7 @@ function AdminPortal() {
     setPrice("");
     setMrp("");
     setDesc("");
+    setSpecifications([]);
     setImage(capsules);
     setCustomImage("");
     setEditingId(null);
@@ -222,6 +258,60 @@ function AdminPortal() {
     sessionStorage.removeItem("thulir_token");
     setIsAuthenticated(false);
     resetForm();
+    resetTreatmentForm();
+  };
+
+  const handleEditTreatment = (t: any) => {
+    setEditingTreatmentId(t.id);
+    setTreatmentTitle(t.title);
+    setTreatmentDesc(t.desc);
+    setTreatmentImage(t.image);
+    setTreatmentCategory(t.category);
+  };
+
+  const handleSaveTreatment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!treatmentTitle || !treatmentDesc || !treatmentImage) {
+      alert("Please fill in all required fields and upload an image.");
+      return;
+    }
+    
+    try {
+      const payload = {
+        title: treatmentTitle,
+        desc: treatmentDesc,
+        image: treatmentImage,
+        category: treatmentCategory
+      };
+
+      if (editingTreatmentId) {
+        await fetchApi(`/treatment-items/${editingTreatmentId}`, {
+          method: 'PUT',
+          body: JSON.stringify(payload)
+        });
+      } else {
+        await fetchApi('/treatment-items', {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+      }
+      
+      const data = await fetchApi('/treatment-items');
+      setTreatmentItems(data);
+      resetTreatmentForm();
+    } catch (err: any) {
+      alert("Error saving treatment: " + err.message);
+    }
+  };
+
+  const handleDeleteTreatment = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this treatment?")) return;
+    try {
+      await fetchApi(`/treatment-items/${id}`, { method: 'DELETE' });
+      setTreatmentItems(treatmentItems.filter(t => t.id !== id));
+    } catch (err: any) {
+      alert("Error deleting treatment: " + err.message);
+    }
   };
 
   const handleEditClick = (p: any) => {
@@ -231,6 +321,12 @@ function AdminPortal() {
     setPrice(p.price.toString());
     setMrp(p.mrp ? p.mrp.toString() : "");
     setDesc(p.desc);
+    
+    if (p.specifications) {
+      setSpecifications(Object.entries(p.specifications).map(([key, value]) => ({ key, value: value as string })));
+    } else {
+      setSpecifications([]);
+    }
     
     // Check if preset image or custom URL
     const isPreset = IMAGE_PRESETS.some(preset => preset.value === p.image);
@@ -251,6 +347,13 @@ function AdminPortal() {
     }
 
     const finalImage = customImage || image || capsules;
+    const specsObj = specifications.reduce((acc, curr) => {
+      if (curr.key.trim() && curr.value.trim()) {
+        acc[curr.key.trim()] = curr.value.trim();
+      }
+      return acc;
+    }, {} as Record<string, string>);
+
     const productData = {
       title,
       tag: tag.toUpperCase(),
@@ -258,6 +361,7 @@ function AdminPortal() {
       mrp: mrp ? parseFloat(mrp) : undefined,
       desc,
       image: finalImage,
+      specifications: specsObj,
     };
 
     if (editingId) {
@@ -372,7 +476,7 @@ function AdminPortal() {
 
         {/* Tabs */}
         <div className="flex items-center gap-4 border-b border-border mb-8 overflow-x-auto">
-          {["products", "gallery", "orders", "appointments", "patients", "settings"].map((tab) => (
+          {["products", "treatments", "gallery", "orders", "appointments", "patients", "settings"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab as any)}
@@ -471,6 +575,54 @@ function AdminPortal() {
                   className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-leaf focus:outline-none"
                   placeholder="Describe the product health benefits..."
                 />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">
+                  Specifications
+                </label>
+                <div className="space-y-2">
+                  {specifications.map((spec, index) => (
+                    <div key={index} className="flex gap-2">
+                      <input 
+                        type="text" 
+                        placeholder="Key (e.g. Fragrance)" 
+                        value={spec.key} 
+                        onChange={(e) => {
+                          const newSpecs = [...specifications];
+                          newSpecs[index].key = e.target.value;
+                          setSpecifications(newSpecs);
+                        }}
+                        className="w-1/3 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-leaf focus:outline-none"
+                      />
+                      <input 
+                        type="text" 
+                        placeholder="Value (e.g. Turmeric)" 
+                        value={spec.value} 
+                        onChange={(e) => {
+                          const newSpecs = [...specifications];
+                          newSpecs[index].value = e.target.value;
+                          setSpecifications(newSpecs);
+                        }}
+                        className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-leaf focus:outline-none"
+                      />
+                      <button 
+                        type="button" 
+                        onClick={() => setSpecifications(specifications.filter((_, i) => i !== index))}
+                        className="rounded-lg border border-border p-2 text-red-500 hover:bg-red-50 transition-colors"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ))}
+                  <button 
+                    type="button" 
+                    onClick={() => setSpecifications([...specifications, {key: "", value: ""}])}
+                    className="inline-flex items-center gap-1 text-sm font-semibold text-leaf hover:underline mt-2"
+                  >
+                    <Plus className="h-4 w-4" /> Add Specification
+                  </button>
+                </div>
               </div>
 
               <div>
@@ -685,6 +837,193 @@ function AdminPortal() {
           </div>
         </div>
         </>
+        ) : activeTab === "treatments" ? (
+          <>
+            {/* Add/Edit Treatment Form Overlay */}
+            {(isAddingTreatment || editingTreatmentId) && (
+              <div className="mb-8 rounded-2xl border border-border bg-card p-6 shadow-md max-w-2xl mx-auto">
+                <div className="flex items-center justify-between border-b border-border pb-4 mb-4">
+                  <h2 className="text-xl font-bold text-foreground">
+                    {editingTreatmentId ? "Edit Treatment" : "Create New Treatment"}
+                  </h2>
+                  <button onClick={resetTreatmentForm} className="text-muted-foreground hover:text-foreground">
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+                <form onSubmit={handleSaveTreatment} className="space-y-4">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">
+                        Treatment Name *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={treatmentTitle}
+                        onChange={(e) => setTreatmentTitle(e.target.value)}
+                        className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-leaf focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">
+                        Category *
+                      </label>
+                      <select
+                        value={treatmentCategory}
+                        onChange={(e) => setTreatmentCategory(e.target.value)}
+                        className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-leaf focus:outline-none"
+                      >
+                        <option value="SIDDHA">Siddha</option>
+                        <option value="ACUPUNCTURE">Acupuncture</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">
+                      Description *
+                    </label>
+                    <textarea
+                      required
+                      value={treatmentDesc}
+                      onChange={(e) => setTreatmentDesc(e.target.value)}
+                      rows={3}
+                      className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-leaf focus:outline-none"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">
+                      Treatment Image *
+                    </label>
+                    <div className="flex gap-2 mb-2">
+                      <input
+                        type="file"
+                        id="treatmentImageUpload"
+                        className="hidden"
+                        accept="image/*"
+                        onChange={async (e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            try {
+                              const url = await handleFileUpload(e.target.files[0]);
+                              setTreatmentImage(url);
+                            } catch(err) {
+                              // error handled in handleFileUpload
+                            }
+                          }
+                        }}
+                      />
+                      <label 
+                        htmlFor="treatmentImageUpload"
+                        className="inline-flex cursor-pointer items-center justify-center rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm font-medium hover:bg-muted"
+                      >
+                        {isUploading ? "Uploading..." : "Upload Image"}
+                      </label>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-2">
+                      {treatmentImage && (
+                        <div
+                          className="group relative h-16 w-16 cursor-pointer overflow-hidden rounded-lg border-2 border-leaf"
+                        >
+                          <img src={treatmentImage} alt="Custom" className="h-full w-full object-cover" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-2 pt-4">
+                    <button
+                      type="button"
+                      onClick={resetTreatmentForm}
+                      className="rounded-full border border-border px-5 py-2 text-sm font-semibold text-foreground hover:bg-muted"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="rounded-full bg-leaf px-5 py-2 text-sm font-semibold text-leaf-foreground hover:bg-leaf/90"
+                    >
+                      Save Treatment
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-extrabold text-foreground tracking-tight">Treatment Management</h2>
+              <button
+                onClick={() => setIsAddingTreatment(true)}
+                className="inline-flex items-center justify-center gap-1.5 rounded-full bg-leaf px-4 py-2 text-sm font-semibold text-leaf-foreground shadow transition-transform hover:scale-102 hover:bg-leaf/90 cursor-pointer"
+              >
+                <Plus className="h-4 w-4" /> Add Treatment
+              </button>
+            </div>
+
+            <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm text-muted-foreground">
+                  <thead className="bg-muted/50 text-xs uppercase text-foreground">
+                    <tr>
+                      <th className="px-6 py-4">Treatment</th>
+                      <th className="px-6 py-4">Category</th>
+                      <th className="px-6 py-4 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {isLoadingTreatments ? (
+                      <tr>
+                        <td colSpan={3} className="px-6 py-10 text-center text-muted-foreground">Loading...</td>
+                      </tr>
+                    ) : treatmentItems.length === 0 ? (
+                      <tr>
+                        <td colSpan={3} className="px-6 py-10 text-center text-muted-foreground font-medium">
+                          No treatments found. Click "Add Treatment" to create one.
+                        </td>
+                      </tr>
+                    ) : (
+                      treatmentItems.map((t) => (
+                        <tr key={t.id} className="hover:bg-muted/10 transition-colors">
+                          <td className="px-6 py-4 flex items-center gap-3">
+                            <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-border">
+                              <img src={t.image} alt={t.title} className="h-full w-full object-cover" />
+                            </div>
+                            <div>
+                              <span className="block font-bold text-foreground">{t.title}</span>
+                              <span className="block text-xs line-clamp-1 mt-0.5">{t.desc}</span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${t.category === 'SIDDHA' ? 'bg-leaf/10 text-leaf' : 'bg-earth/10 text-earth'}`}>
+                              {t.category}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            <div className="flex justify-end gap-2">
+                              <button
+                                onClick={() => handleEditTreatment(t)}
+                                aria-label="Edit treatment"
+                                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border text-foreground hover:bg-leaf/10 hover:text-leaf transition-colors"
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteTreatment(t.id)}
+                                aria-label="Delete treatment"
+                                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border text-red-600 hover:bg-red-50 transition-colors"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
         ) : activeTab === "gallery" ? (
           <GalleryView 
             images={galleryImages} 
