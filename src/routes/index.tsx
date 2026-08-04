@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Phone, ArrowRight, Leaf, ShieldCheck, HeartPulse, Sparkles, Clock, Award, Users, CheckCircle2, Stethoscope, Activity, ShoppingBag, Star, ChevronLeft, ChevronRight } from "lucide-react";
 import heroBg from "../assets/hero-bg.jpg";
 import treatmentsBg from "../assets/treatments-bg.jpg";
@@ -30,6 +30,23 @@ const highlights = [
 function Home() {
   const { products } = useProducts();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Live Auto-scroll carousel every 3.5 seconds
+  useEffect(() => {
+    if (isHovered) return;
+    const interval = setInterval(() => {
+      if (scrollRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+        if (scrollLeft + clientWidth >= scrollWidth - 15) {
+          scrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
+        } else {
+          scrollRef.current.scrollTo({ left: scrollLeft + 310, behavior: "smooth" });
+        }
+      }
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [isHovered]);
 
   const handleScroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
@@ -55,6 +72,11 @@ function Home() {
           decoding="async"
         />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-forest/90 via-forest/70 to-forest/30" />
+        
+        {/* Live Animated Ambient Light Orbs */}
+        <div className="absolute top-1/4 left-8 h-64 w-64 rounded-full bg-emerald-500/20 blur-3xl animate-glow pointer-events-none" />
+        <div className="absolute bottom-12 right-12 h-80 w-80 rounded-full bg-amber-400/15 blur-3xl animate-float-reverse pointer-events-none" />
+
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-32 lg:px-8 lg:py-40">
           <div className="max-w-2xl text-leaf-foreground">
             <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-4 py-1.5 text-xs sm:text-sm font-semibold backdrop-blur-md shadow-lg">
@@ -142,9 +164,13 @@ function Home() {
             </div>
           </div>
 
-          {/* Swipeable Carousel Container */}
+          {/* Swipeable & Live Auto-Scrolling Carousel Container */}
           <div
             ref={scrollRef}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            onTouchStart={() => setIsHovered(true)}
+            onTouchEnd={() => setIsHovered(false)}
             className="flex gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-hide py-2 px-1 -mx-4 px-4 sm:mx-0 sm:px-0"
             style={{ scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}
           >
