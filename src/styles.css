@@ -1,7 +1,7 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Noto+Sans+Tamil:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
@@ -161,29 +161,40 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: "Outfit", "Plus Jakarta Sans", "Noto Sans Tamil", system-ui, sans-serif;
+    font-family: "Outfit", "Playfair Display", "Noto Sans Tamil", system-ui, sans-serif;
   }
 }
 
 /* Keyframe Animations */
 @keyframes float {
   0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-8px) rotate(3deg); }
+  50% { transform: translateY(-10px) rotate(4deg); }
+}
+
+@keyframes floatReverse {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(8px) rotate(-3deg); }
 }
 
 @keyframes pulseGlow {
   0%, 100% { opacity: 0.6; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.05); }
+  50% { opacity: 1; transform: scale(1.06); }
 }
 
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 @keyframes bounceSlow {
   0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(6px); }
+  50% { transform: translateX(8px); }
 }
 
 @layer utilities {
@@ -191,20 +202,36 @@
     animation: float 4s ease-in-out infinite;
   }
 
+  .animate-float-reverse {
+    animation: floatReverse 5s ease-in-out infinite;
+  }
+
+  .animate-spin-slow {
+    animation: spinSlow 20s linear infinite;
+  }
+
   .animate-glow {
     animation: pulseGlow 3s ease-in-out infinite;
   }
 
   .animate-swipe-hint {
-    animation: bounceSlow 1.5s ease-in-out infinite;
+    animation: bounceSlow 1.4s ease-in-out infinite;
   }
 
-  .text-balance {
-    text-wrap: balance;
+  .font-serif-heading {
+    font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif;
+  }
+
+  .font-modern-title {
+    font-family: "Outfit", "Space Grotesk", sans-serif;
   }
 
   .font-tamil {
     font-family: "Noto Sans Tamil", "Plus Jakarta Sans", sans-serif;
+  }
+
+  .text-balance {
+    text-wrap: balance;
   }
 
   .bg-dot-pattern {
@@ -220,25 +247,28 @@
     background: linear-gradient(135deg, var(--color-cream) 0%, var(--color-earth) 100%);
   }
 
-  .hero-gradient {
-    background: radial-gradient(circle at top right, oklch(0.40 0.12 145 / 0.35), transparent 60%),
-                linear-gradient(180deg, oklch(0.20 0.08 145 / 0.95) 0%, oklch(0.28 0.09 145 / 0.85) 100%);
+  .animated-gradient-text {
+    background: linear-gradient(-45deg, #ffffff, #a7f3d0, #fef3c7, #6ee7b7);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientMove 6s ease infinite;
   }
 
   .glass-card {
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
   }
 
   .glass-dark {
-    background: rgba(18, 38, 25, 0.65);
-    backdrop-filter: blur(14px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(18, 38, 25, 0.75);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
   }
 
   .glow-shadow {
-    box-shadow: 0 10px 30px -10px rgba(46, 125, 50, 0.25);
+    box-shadow: 0 12px 35px -10px rgba(46, 125, 50, 0.3);
   }
 
   .scrollbar-hide::-webkit-scrollbar {

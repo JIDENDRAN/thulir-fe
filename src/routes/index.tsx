@@ -65,11 +65,11 @@ function Home() {
               <Leaf className="h-4 w-4 animate-float text-emerald-300" /> Natural Healing in Coimbatore
             </span>
             <h1 className="mt-6 text-balance text-3xl font-extrabold leading-tight sm:text-5xl lg:text-6xl flex flex-col gap-1 tracking-tight">
-              <span className="bg-gradient-to-r from-white via-emerald-100 to-amber-100 bg-clip-text text-transparent">Thulir Healthcare</span>
+              <span className="animated-gradient-text font-serif-heading drop-shadow-md">Thulir Healthcare</span>
               <span className="text-xl font-bold text-white/90 sm:text-3xl lg:text-4xl mt-0.5 font-tamil drop-shadow">
                 துளிர் ஹெல்த்கேர்
               </span>
-              <span className="text-lg font-semibold text-earth sm:text-2xl lg:text-3xl mt-1">
+              <span className="text-lg font-semibold text-earth sm:text-2xl lg:text-3xl mt-1 font-modern-title">
                 Siddha Treatment & Acupuncture Clinic
               </span>
             </h1>
@@ -79,7 +79,7 @@ function Home() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row flex-wrap">
               <a
                 href={`tel:+91${phoneNumber}`}
-                className="group inline-flex items-center justify-center gap-2 rounded-full bg-leaf px-6 py-3.5 text-base font-bold text-leaf-foreground shadow-xl transition-all duration-300 hover:scale-105 hover:bg-leaf/90 hover:shadow-emerald-900/30"
+                className="group inline-flex items-center justify-center gap-2 rounded-full bg-leaf px-6 py-3.5 text-base font-bold text-leaf-foreground shadow-xl transition-all duration-300 hover:scale-105 hover:bg-leaf/90 hover:shadow-emerald-900/30 cursor-pointer"
               >
                 <Phone className="h-5 w-5 transition-transform group-hover:rotate-12" /> Free Consultation
               </a>
@@ -106,9 +106,9 @@ function Home() {
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
             <div>
               <span className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-widest text-leaf bg-leaf/10 px-3.5 py-1 rounded-full border border-leaf/20 shadow-xs">
-                <Sparkles className="h-3.5 w-3.5 text-leaf animate-pulse" /> Featured Range / மூலிகை தயாரிப்புகள்
+                <Sparkles className="h-3.5 w-3.5 text-leaf animate-spin-slow" /> Featured Range / மூலிகை தயாரிப்புகள்
               </span>
-              <h2 className="mt-3 text-2xl sm:text-4xl font-extrabold tracking-tight text-foreground">
+              <h2 className="mt-3 text-2xl sm:text-4xl font-extrabold tracking-tight text-foreground font-serif-heading">
                 Our Herbal Healthcare Range
               </h2>
               <p className="mt-1.5 text-muted-foreground text-sm sm:text-base flex items-center gap-2">
