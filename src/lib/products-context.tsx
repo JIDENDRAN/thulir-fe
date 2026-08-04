@@ -19,7 +19,7 @@ import skin from "../assets/product-skin.jpg";
 import health from "../assets/product-health.jpg";
 import eye from "../assets/product-eye.jpg";
 
-const imageMap: Record<string, string> = {
+export const imageMap: Record<string, string> = {
   capsules,
   oil,
   hair,

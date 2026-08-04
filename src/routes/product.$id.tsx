@@ -4,24 +4,41 @@ import { API_BASE_URL } from "@/lib/api";
 import { useCart, inr } from "@/lib/cart";
 import { ShoppingCart, Check, Star, ArrowLeft, Heart } from "lucide-react";
 
+import { useProducts, imageMap } from "@/lib/products-context";
+
 export const Route = createFileRoute("/product/$id")({
   component: ProductDetails,
 });
 
 function ProductDetails() {
   const { id } = useParams({ from: "/product/$id" });
+  const { products } = useProducts();
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const { add } = useCart();
   const [added, setAdded] = useState(false);
 
   useEffect(() => {
+    // First check if product is available in products context
+    const ctxProduct = products.find((p) => p.id === id);
+    if (ctxProduct) {
+      setProduct({
+        ...ctxProduct,
+        image: imageMap[ctxProduct.image] || ctxProduct.image,
+      });
+      setLoading(false);
+      return;
+    }
+
     async function fetchProduct() {
       try {
         const res = await fetch(`${API_BASE_URL}/products/${id}`);
         if (res.ok) {
           const data = await res.json();
-          setProduct(data);
+          setProduct({
+            ...data,
+            image: imageMap[data.image] || data.image,
+          });
         }
       } catch (err) {
         console.error(err);
@@ -30,7 +47,7 @@ function ProductDetails() {
       }
     }
     fetchProduct();
-  }, [id]);
+  }, [id, products]);
 
   if (loading) {
     return (
