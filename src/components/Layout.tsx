@@ -49,7 +49,7 @@ function LayoutInner({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/90 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
-            <img src="/logo.png" alt="Thulir Healthcare Logo" className="h-10 w-10 object-contain" />
+            <img src="/logo.png" alt="Thulir Healthcare Logo" className="h-10 w-10 object-contain" width={40} height={40} decoding="async" />
             <div className="flex flex-col">
               <span className="text-base font-bold leading-tight text-foreground sm:text-lg">{clinicName}</span>
               <span className="text-[10px] font-medium leading-tight text-muted-foreground sm:text-[11px]">{clinicTagline}</span>
@@ -143,7 +143,7 @@ function LayoutInner({ children }: { children: ReactNode }) {
           <div className="grid gap-10 md:grid-cols-3">
             <div>
               <div className="flex items-center gap-2">
-                <img src="/logo.png" alt="Thulir Healthcare Logo" className="h-10 w-10 object-contain" />
+                <img src="/logo.png" alt="Thulir Healthcare Logo" className="h-10 w-10 object-contain" width={40} height={40} decoding="async" />
                 <span className="text-lg font-bold">{clinicName}</span>
               </div>
               <p className="mt-3 text-sm text-forest-foreground/80">

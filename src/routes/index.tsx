@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Phone, ArrowRight, Leaf, ShieldCheck, HeartPulse, Sparkles, Clock, Award, Users, CheckCircle2, Stethoscope, Activity } from "lucide-react";
+import { Phone, ArrowRight, Leaf, ShieldCheck, HeartPulse, Sparkles, Clock, Award, Users, CheckCircle2, Stethoscope, Activity, ShoppingBag, Star } from "lucide-react";
 import heroBg from "../assets/hero-bg.jpg";
 import treatmentsBg from "../assets/treatments-bg.jpg";
 import productsBg from "../assets/products-bg.jpg";
 import { phoneNumber } from "../components/Layout";
+import { useProducts } from "@/lib/products-context";
+import { inr } from "@/lib/cart";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -25,6 +27,9 @@ const highlights = [
 ];
 
 function Home() {
+  const { products } = useProducts();
+  const featuredProducts = products.slice(0, 4);
+
   return (
     <>
       <section className="relative isolate overflow-hidden">
@@ -34,6 +39,8 @@ function Home() {
           className="absolute inset-0 -z-10 h-full w-full object-cover"
           width={1920}
           height={1080}
+          fetchPriority="high"
+          decoding="async"
         />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-forest/90 via-forest/70 to-forest/30" />
         <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8 lg:py-40">
@@ -112,7 +119,7 @@ function Home() {
       <section className="px-4 pb-16 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-3">
           <Link to="/treatments" className="group relative isolate overflow-hidden rounded-3xl shadow-lg min-h-[320px] flex flex-col justify-end">
-            <img src={heroBg} alt="Siddha herbs and preparation" className="absolute inset-0 -z-10 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+            <img src={heroBg} alt="Siddha herbs and preparation" className="absolute inset-0 -z-10 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async" />
             <div className="absolute inset-0 -z-10 bg-gradient-to-t from-forest via-forest/60 to-transparent" />
             <div className="p-6 text-leaf-foreground">
 
@@ -129,7 +136,7 @@ function Home() {
             </div>
           </Link>
           <Link to="/treatments" className="group relative isolate overflow-hidden rounded-3xl shadow-lg min-h-[320px] flex flex-col justify-end">
-            <img src={treatmentsBg} alt="Acupuncture session" className="absolute inset-0 -z-10 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+            <img src={treatmentsBg} alt="Acupuncture session" className="absolute inset-0 -z-10 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async" />
             <div className="absolute inset-0 -z-10 bg-gradient-to-t from-forest via-forest/60 to-transparent" />
             <div className="p-6 text-leaf-foreground">
 
@@ -146,7 +153,7 @@ function Home() {
             </div>
           </Link>
           <Link to="/products" className="group relative isolate overflow-hidden rounded-3xl shadow-lg min-h-[320px] flex flex-col justify-end">
-            <img src={productsBg} alt="Herbal products" className="absolute inset-0 -z-10 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+            <img src={productsBg} alt="Herbal products" className="absolute inset-0 -z-10 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async" />
             <div className="absolute inset-0 -z-10 bg-gradient-to-t from-forest via-forest/60 to-transparent" />
             <div className="p-6 text-leaf-foreground">
 
@@ -177,6 +184,8 @@ function Home() {
                   src="/logo.png"
                   alt="Thulir Healthcare Logo"
                   className="w-full h-auto object-contain drop-shadow-xl hover:scale-105 transition-transform duration-700 ease-out"
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
             </div>
@@ -307,6 +316,97 @@ function Home() {
               </div>
             </div>
 
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Products Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/20 border-t border-border">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-4">
+            <div>
+              <span className="text-xs font-bold uppercase tracking-widest text-leaf bg-leaf/10 px-3 py-1 rounded-full">
+                Herbal Range / மூலிகை தயாரிப்புகள்
+              </span>
+              <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+                Featured Herbal Products
+              </h2>
+              <p className="mt-2 text-muted-foreground text-base max-w-xl">
+                Pure, side-effect-free herbal oils, capsules, skin and hair care formulations.
+              </p>
+            </div>
+            <Link
+              to="/products"
+              className="hidden sm:inline-flex items-center gap-2 font-bold text-leaf hover:underline shrink-0 text-base"
+            >
+              View All Products ({products.length}) <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {featuredProducts.map((p) => {
+              const reviewCount = p.reviews?.length || 0;
+              const avgRating = reviewCount > 0
+                ? (p.reviews!.reduce((sum: number, r: any) => sum + r.rating, 0) / reviewCount).toFixed(1)
+                : null;
+
+              return (
+                <div
+                  key={p.id}
+                  className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all hover:-translate-y-1 hover:shadow-md"
+                >
+                  <Link to={`/product/${p.id}`} className="relative aspect-square overflow-hidden block">
+                    <img
+                      src={p.image}
+                      alt={p.title}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                      decoding="async"
+                      width={400}
+                      height={400}
+                    />
+                    <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-leaf px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-leaf-foreground">
+                      <Leaf className="h-3 w-3" /> {p.tag}
+                    </span>
+                  </Link>
+                  <div className="flex flex-1 flex-col p-5">
+                    <Link to={`/product/${p.id}`} className="hover:text-leaf">
+                      <h3 className="text-base font-bold text-card-foreground leading-tight line-clamp-1">{p.title}</h3>
+                    </Link>
+                    <p className="mt-1 flex-1 text-xs text-muted-foreground line-clamp-2">{p.desc}</p>
+                    <div className="mt-3 flex items-baseline gap-2">
+                      <span className="text-lg font-bold text-foreground">{inr(p.price)}</span>
+                      {p.mrp && <span className="text-xs text-muted-foreground line-through">{inr(p.mrp)}</span>}
+                    </div>
+                    <div className="mt-1.5 flex items-center gap-1 text-xs text-muted-foreground">
+                      <Star className={`h-3.5 w-3.5 ${avgRating ? 'fill-yellow-400 text-yellow-400' : 'text-muted'}`} />
+                      {avgRating ? (
+                        <><span className="font-medium text-foreground">{avgRating}</span> ({reviewCount})</>
+                      ) : (
+                        <span>No reviews</span>
+                      )}
+                    </div>
+                    <div className="mt-4 flex gap-2">
+                      <Link
+                        to={`/product/${p.id}`}
+                        className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-leaf px-4 py-2 text-xs font-semibold text-leaf-foreground transition-colors hover:bg-leaf/90"
+                      >
+                        <ShoppingBag className="h-3.5 w-3.5" /> View Details
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="mt-10 text-center">
+            <Link
+              to="/products"
+              className="inline-flex items-center gap-2 rounded-full bg-leaf px-6 py-3 text-sm font-bold text-leaf-foreground shadow-md transition-transform hover:scale-105"
+            >
+              View All Products ({products.length}) <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
         </div>
       </section>

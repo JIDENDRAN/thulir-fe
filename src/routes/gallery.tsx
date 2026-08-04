@@ -47,6 +47,8 @@ function Gallery() {
           className="absolute inset-0 -z-10 h-full w-full object-cover"
           width={1920}
           height={1080}
+          fetchPriority="high"
+          decoding="async"
         />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-forest/90 via-forest/70 to-forest/30" />
         <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8 lg:py-40">
@@ -103,7 +105,8 @@ function Gallery() {
                       src={img.src} 
                       alt="Thulir Healthcare Gallery" 
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" 
-                      loading="lazy" 
+                      loading="lazy"
+                      decoding="async" 
                     />
                   </div>
                 </div>

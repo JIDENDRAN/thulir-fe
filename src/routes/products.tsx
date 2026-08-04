@@ -33,9 +33,9 @@ function AddButton({ productId }: { productId: string }) {
         setAdded(true);
         setTimeout(() => setAdded(false), 1400);
       }}
-      className="inline-flex flex-1 items-center justify-center gap-1.5 sm:gap-2 rounded-full bg-leaf px-2 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold text-leaf-foreground transition-colors hover:bg-leaf/90"
+      className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-leaf px-4 py-2 text-sm font-semibold text-leaf-foreground transition-colors hover:bg-leaf/90"
     >
-      {added ? <><Check className="h-3 w-3 sm:h-4 sm:w-4" /> Added</> : <><ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" /> <span className="hidden sm:inline">Add to Cart</span><span className="sm:hidden">Add</span></>}
+      {added ? <><Check className="h-4 w-4" /> Added to Cart</> : <><ShoppingCart className="h-4 w-4" /> Add to Cart</>}
     </button>
   );
 }
@@ -173,7 +173,7 @@ function Products() {
   return (
     <>
       <section className="relative isolate overflow-hidden">
-        <img src={productsBg} alt="Herbal products" className="absolute inset-0 -z-10 h-full w-full object-cover" width={1920} height={1080} />
+        <img src={productsBg} alt="Herbal products" className="absolute inset-0 -z-10 h-full w-full object-cover" width={1920} height={1080} fetchPriority="high" decoding="async" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-forest/90 to-forest/40" />
         <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-28 lg:px-8">
           <p className="text-sm font-semibold uppercase tracking-wider text-earth">Herbal Range</p>
@@ -229,7 +229,7 @@ function Products() {
               <button onClick={() => { setSelectedTag("All"); setSearchQuery(""); }} className="mt-4 text-leaf font-semibold hover:underline">Clear Filters</button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
               {filteredProducts.map((c) => {
                 const reviewCount = c.reviews?.length || 0;
                 const avgRating = reviewCount > 0
@@ -239,7 +239,7 @@ function Products() {
                 return (
                   <div key={c.id} className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all hover:-translate-y-1 hover:shadow-md">
                     <Link to={`/product/${c.id}`} className="relative aspect-square overflow-hidden block">
-                      <img src={c.image} alt={c.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" width={800} height={800} />
+                      <img src={c.image} alt={c.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async" width={400} height={400} />
                       <span className="absolute left-2 top-2 sm:left-3 sm:top-3 inline-flex items-center gap-1 rounded-full bg-leaf px-2 py-0.5 sm:px-3 sm:py-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-leaf-foreground">
                         <Leaf className="h-2.5 w-2.5 sm:h-3 sm:w-3" /> {c.tag}
                       </span>
@@ -270,7 +270,7 @@ function Products() {
                         <AddButton productId={c.id} />
                         <button
                           onClick={() => setReviewModalProduct({ id: c.id, title: c.title })}
-                          className="hidden sm:inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border text-foreground hover:text-leaf hover:bg-leaf/10"
+                          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border text-foreground hover:text-leaf hover:bg-leaf/10"
                           title="Reviews"
                         >
                           <MessageCircle className="h-4 w-4" />

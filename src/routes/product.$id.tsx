@@ -87,6 +87,8 @@ function ProductDetails() {
               src={product.image} 
               alt={product.title} 
               className="w-full h-auto object-contain"
+              fetchPriority="high"
+              decoding="async"
             />
           </div>
 

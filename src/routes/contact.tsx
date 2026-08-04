@@ -49,7 +49,7 @@ function Contact() {
   return (
     <>
       <section className="relative isolate overflow-hidden">
-        <img src={contactBg} alt="Green medicinal leaves" className="absolute inset-0 -z-10 h-full w-full object-cover" width={1920} height={1080} />
+        <img src={contactBg} alt="Green medicinal leaves" className="absolute inset-0 -z-10 h-full w-full object-cover" width={1920} height={1080} fetchPriority="high" decoding="async" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-forest/90 via-forest/70 to-forest/30" />
         <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8 lg:py-40">
           <div className="max-w-2xl text-leaf-foreground">
