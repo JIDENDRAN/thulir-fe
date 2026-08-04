@@ -55,41 +55,45 @@ function Home() {
           decoding="async"
         />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-forest/90 via-forest/70 to-forest/30" />
-        <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8 lg:py-40">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-32 lg:px-8 lg:py-40">
           <div className="max-w-2xl text-leaf-foreground">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-sm font-medium backdrop-blur">
-              <Leaf className="h-4 w-4" /> Natural Healing in Coimbatore
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-4 py-1.5 text-xs sm:text-sm font-semibold backdrop-blur-md shadow-lg">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+              </span>
+              <Leaf className="h-4 w-4 animate-float text-emerald-300" /> Natural Healing in Coimbatore
             </span>
-            <h1 className="mt-6 text-balance text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl flex flex-col gap-1">
-              <span>Thulir Healthcare</span>
-              <span className="text-2xl font-bold text-white/80 sm:text-3xl lg:text-4xl mt-0.5">
+            <h1 className="mt-6 text-balance text-3xl font-extrabold leading-tight sm:text-5xl lg:text-6xl flex flex-col gap-1 tracking-tight">
+              <span className="bg-gradient-to-r from-white via-emerald-100 to-amber-100 bg-clip-text text-transparent">Thulir Healthcare</span>
+              <span className="text-xl font-bold text-white/90 sm:text-3xl lg:text-4xl mt-0.5 font-tamil drop-shadow">
                 துளிர் ஹெல்த்கேர்
               </span>
-              <span className="text-xl font-semibold text-earth sm:text-2xl lg:text-3xl mt-1.5">
+              <span className="text-lg font-semibold text-earth sm:text-2xl lg:text-3xl mt-1">
                 Siddha Treatment & Acupuncture Clinic
               </span>
             </h1>
-            <p className="mt-6 text-lg text-white/90">
+            <p className="mt-5 text-base sm:text-lg text-white/90 leading-relaxed font-tamil">
               பாரம்பரிய சித்த மருத்துவம் & அக்குபஞ்சர் மூலம் பக்க விளைவுகள் இல்லாத பாதுகாப்பான சிகிச்சை. Heal naturally with time-tested therapies.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row flex-wrap">
               <a
                 href={`tel:+91${phoneNumber}`}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-leaf px-6 py-3 text-base font-semibold text-leaf-foreground shadow-xl transition-transform hover:scale-105"
+                className="group inline-flex items-center justify-center gap-2 rounded-full bg-leaf px-6 py-3.5 text-base font-bold text-leaf-foreground shadow-xl transition-all duration-300 hover:scale-105 hover:bg-leaf/90 hover:shadow-emerald-900/30"
               >
-                <Phone className="h-5 w-5" /> Free Consultation
+                <Phone className="h-5 w-5 transition-transform group-hover:rotate-12" /> Free Consultation
               </a>
               <Link
                 to="/treatments"
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/40 bg-white/10 px-6 py-3 text-base font-semibold text-white backdrop-blur transition-colors hover:bg-white/20"
+                className="group inline-flex items-center justify-center gap-2 rounded-full border border-white/40 bg-white/10 px-6 py-3.5 text-base font-bold text-white backdrop-blur-md transition-all duration-300 hover:bg-white/20 hover:scale-105"
               >
-                Siddha Medicine <ArrowRight className="h-4 w-4" />
+                Siddha Medicine <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
                 to="/treatments"
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/40 bg-white/10 px-6 py-3 text-base font-semibold text-white backdrop-blur transition-colors hover:bg-white/20"
+                className="group inline-flex items-center justify-center gap-2 rounded-full border border-white/40 bg-white/10 px-6 py-3.5 text-base font-bold text-white backdrop-blur-md transition-all duration-300 hover:bg-white/20 hover:scale-105"
               >
-                Acupuncture <ArrowRight className="h-4 w-4" />
+                Acupuncture <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </div>
           </div>
@@ -97,18 +101,19 @@ function Home() {
       </section>
 
       {/* TOP PRIORITY: Featured Herbal Products Touch & Swipe Carousel */}
-      <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 bg-muted/20 border-b border-border">
+      <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-muted/30 via-background to-muted/10 border-b border-border">
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
             <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-leaf bg-leaf/10 px-3 py-1 rounded-full">
-                Featured Products / மூலிகை தயாரிப்புகள்
+              <span className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-widest text-leaf bg-leaf/10 px-3.5 py-1 rounded-full border border-leaf/20 shadow-xs">
+                <Sparkles className="h-3.5 w-3.5 text-leaf animate-pulse" /> Featured Range / மூலிகை தயாரிப்புகள்
               </span>
               <h2 className="mt-3 text-2xl sm:text-4xl font-extrabold tracking-tight text-foreground">
                 Our Herbal Healthcare Range
               </h2>
-              <p className="mt-1.5 text-muted-foreground text-sm sm:text-base">
-                Pure, side-effect-free Siddha oils, capsules, hair and skin care. Swipe to explore →
+              <p className="mt-1.5 text-muted-foreground text-sm sm:text-base flex items-center gap-2">
+                <span>Pure, side-effect-free Siddha oils, capsules, hair & skin care.</span>
+                <span className="hidden sm:inline-flex text-xs font-bold text-leaf animate-swipe-hint">Swipe right →</span>
               </p>
             </div>
             <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
@@ -116,23 +121,23 @@ function Home() {
                 <button
                   onClick={() => handleScroll("left")}
                   aria-label="Swipe left"
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background text-foreground shadow-sm hover:bg-leaf hover:text-white transition-colors cursor-pointer"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background text-foreground shadow-sm hover:bg-leaf hover:text-white transition-all hover:scale-105 cursor-pointer"
                 >
                   <ChevronLeft className="h-5 w-5" />
                 </button>
                 <button
                   onClick={() => handleScroll("right")}
                   aria-label="Swipe right"
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background text-foreground shadow-sm hover:bg-leaf hover:text-white transition-colors cursor-pointer"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background text-foreground shadow-sm hover:bg-leaf hover:text-white transition-all hover:scale-105 cursor-pointer"
                 >
                   <ChevronRight className="h-5 w-5" />
                 </button>
               </div>
               <Link
                 to="/products"
-                className="inline-flex items-center gap-1.5 font-bold text-leaf hover:underline text-sm ml-2"
+                className="group inline-flex items-center gap-1.5 font-bold text-leaf hover:underline text-sm ml-2"
               >
-                View All ({products.length}) <ArrowRight className="h-4 w-4" />
+                View All ({products.length}) <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </div>
           </div>
