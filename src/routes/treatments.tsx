@@ -316,7 +316,7 @@ function TreatmentsPage() {
                     .map(t => (
                       <div key={t.id} className="bg-background border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
                         <div className="h-48 w-full overflow-hidden">
-                          <img src={t.image} alt={t.title} className="h-full w-full object-cover transition-transform hover:scale-105 duration-500" loading="lazy" decoding="async" />
+                          <img src={t.image} alt={t.title} className="h-full w-full object-cover transition-transform hover:scale-105 duration-500" loading="lazy" decoding="async" onError={(e) => { (e.target as HTMLImageElement).src = treatmentsBg; }} />
                         </div>
                         <div className="p-6">
                           <h3 className="text-xl font-bold text-foreground mb-3">{t.title}</h3>
@@ -470,7 +470,7 @@ function TreatmentsPage() {
                     .map(t => (
                       <div key={t.id} className="bg-background border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
                         <div className="h-48 w-full overflow-hidden">
-                          <img src={t.image} alt={t.title} className="h-full w-full object-cover transition-transform hover:scale-105 duration-500" loading="lazy" decoding="async" />
+                          <img src={t.image} alt={t.title} className="h-full w-full object-cover transition-transform hover:scale-105 duration-500" loading="lazy" decoding="async" onError={(e) => { (e.target as HTMLImageElement).src = treatmentsBg; }} />
                         </div>
                         <div className="p-6">
                           <h3 className="text-xl font-bold text-foreground mb-3">{t.title}</h3>

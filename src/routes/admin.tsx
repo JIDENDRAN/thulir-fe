@@ -986,7 +986,7 @@ function AdminPortal() {
                         <tr key={t.id} className="hover:bg-muted/10 transition-colors">
                           <td className="px-6 py-4 flex items-center gap-3">
                             <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-border">
-                              <img src={t.image} alt={t.title} className="h-full w-full object-cover" />
+                              <img src={t.image} alt={t.title} className="h-full w-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = "/logo.png"; }} />
                             </div>
                             <div>
                               <span className="block font-bold text-foreground">{t.title}</span>

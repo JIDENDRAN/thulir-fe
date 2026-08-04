@@ -5,6 +5,7 @@ import { Calendar as CalendarIcon, Clock, MessageCircle, User, Phone as PhoneIco
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { fetchApi } from "@/lib/api";
 import { phoneNumber } from "../components/Layout";
 
 export const Route = createFileRoute("/book")({
@@ -54,7 +55,6 @@ function BookPage() {
     
     try {
       // 1. Save to backend
-      const { fetchApi } = await import('@/lib/api');
       const appointment = await fetchApi('/appointments', {
         method: 'POST',
         body: JSON.stringify({
